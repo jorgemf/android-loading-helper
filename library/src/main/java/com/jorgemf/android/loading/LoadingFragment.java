@@ -79,13 +79,14 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 		mContentLoadingProgressBar = (ContentLoadingProgressBar) view.findViewById(R.id.center_progressbar);
 		mTopLoadingProgressBar = (ProgressBar) mTopLoadingView.findViewById(R.id.loading_progress_bar);
 		mTopLoadingProgressBar.setMax(PROGRESS_BAR_MAX);
+		mTopLoadingProgressBar.setProgressDrawable(new CircularLoadingDrawable(getActivity()));
 
 		mTopLoadingView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 		mLoadingViewOriginalHeight = mTopLoadingView.getMeasuredHeight();
 
 		// use this setting to improve performance if you know that changes
 		// in content do not change the layout size of the RecyclerView
-		mRecyclerView.setHasFixedSize(true);
+//		mRecyclerView.setHasFixedSize(true);
 
 		// use a linear layout manager
 		mLayoutManager = onCreateLayoutManager();
@@ -150,7 +151,7 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 		mEndlessLoadingPreloadAhead = numberOfElements;
 	}
 
-	public void preloadInitial() {
+	protected void preloadInitial() {
 		finishPreloadInitial();
 	}
 
@@ -158,15 +159,15 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 		return new LinearLayoutManager(getActivity());
 	}
 
-	public abstract RecyclerView.Adapter<k> onCreateAdapter();
+	protected abstract RecyclerView.Adapter<k> onCreateAdapter();
 
 	protected abstract void clearAdapter();
 
-	public abstract void loadPrevious();
+	protected abstract void loadPrevious();
 
-	public abstract void loadNext();
+	protected abstract void loadNext();
 
-	public abstract void loadInitial();
+	protected abstract void loadInitial();
 
 	protected abstract View getTopErrorView();
 
@@ -286,16 +287,14 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 									System.out.println("cancelPullToRefresh diff");
 									mPullToRefreshInitialY = -1;
 									cancelPullToRefresh();
-									return false;
 								}
 							} else {
 								mPullToRefreshInitialY = event.getY();
 								mActivePointerId = pointer;
 								System.out.println("move START: " + mPullToRefreshInitialY);
 								initPullToRefresh();
-								return false;
 							}
-//							break;
+							break;
 						case MotionEvent.ACTION_CANCEL:
 						case MotionEvent.ACTION_UP:
 							System.out.println("move STOP: ");
