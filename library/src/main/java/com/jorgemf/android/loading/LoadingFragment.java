@@ -249,13 +249,12 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 					int lastVisibleItemPosition = mLayoutManager.findLastVisibleItemPosition();
 					if (lastVisibleItemPosition + mEndlessLoadingPreloadAhead >= mAdapter.getItemCount() - 1 && !mIsLoadingNext.get()) {
 						mIsLoadingNext.set(true);
-						mAdapter.showBottomLoading(true);
 						if (mAdapter.isShowBottomError()) {
 							mAdapter.showBottomError(false);
-							int pos = mAdapter.getItemCount() - 1;
-							mAdapter.notifyItemRemoved(pos);
-							mAdapter.notifyItemInserted(pos);
-						} else {
+							mAdapter.notifyItemRemoved(mAdapter.getItemCount() - 1);
+						}
+						if(!mAdapter.isShowBottomLoading()) {
+							mAdapter.showBottomLoading(true);
 							mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
 						}
 						loadNext();
@@ -317,8 +316,10 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 			mAdapter.showTopError(false);
 			mAdapter.notifyItemRemoved(0);
 		}
-		mAdapter.showTopLoading(true);
-		mAdapter.notifyItemInserted(0);
+		if(!mAdapter.isShowTopLoading()) {
+			mAdapter.showTopLoading(true);
+			mAdapter.notifyItemInserted(0);
+		}
 		if (mTopLoadingView != null) {
 			mTopLoadingView.getLayoutParams().height = 1;
 			mTopLoadingProgressBar.setIndeterminate(false);

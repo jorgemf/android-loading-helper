@@ -46,7 +46,7 @@ public class CircularLoadingDrawable extends Drawable {
 				bounds.centerY() - radius,
 				bounds.centerX() + radius,
 				bounds.centerY() + radius);
-		canvas.drawArc(mArcBounds, 270, 360 * mProgress, false, mPaint);
+		canvas.drawArc(mArcBounds, 270 /* (90 + 540 * mProgress) % 360 */, 360 * mProgress, false, mPaint);
 	}
 
 	@Override

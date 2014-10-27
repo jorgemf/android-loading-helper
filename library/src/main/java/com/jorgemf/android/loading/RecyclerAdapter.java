@@ -1,5 +1,6 @@
 package com.jorgemf.android.loading;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,14 @@ import android.widget.ProgressBar;
 import com.jorgemf.android.view.R;
 
 public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+	private static final int TYPE_TOP_LOADING = 0;
+
+	private static final int TYPE_TOP_ERROR = 1;
+
+	private static final int TYPE_BOTTOM_LOADING = 2;
+
+	private static final int TYPE_BOTTOM_ERROR = 3;
 
 	private boolean mShowTopLoading;
 
@@ -36,7 +45,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int type) {
 		RecyclerView.ViewHolder viewHolder;
 		switch (type) {
-			case 0:
+			case TYPE_TOP_LOADING:
 				View topLoadingView = LayoutInflater.from(mLoadingFragment.getActivity())
 						.inflate(R.layout.view_loading, viewGroup, false);
 				ViewHolder topViewHolder = new ViewHolder(topLoadingView);
@@ -45,15 +54,15 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 				topViewHolder.mTopLoading.setProgressDrawable(new CircularLoadingDrawable(mLoadingFragment.getActivity()));
 				viewHolder = topViewHolder;
 				break;
-			case 1:
+			case TYPE_TOP_ERROR:
 				viewHolder = new ViewHolder(mLoadingFragment.createTopErrorView());
 				break;
-			case 2:
+			case TYPE_BOTTOM_LOADING:
 				View bottomLoadingView = LayoutInflater.from(mLoadingFragment.getActivity())
 						.inflate(R.layout.view_loading, viewGroup, false);
 				viewHolder = new ViewHolder(bottomLoadingView);
 				break;
-			case 3:
+			case TYPE_BOTTOM_ERROR:
 				viewHolder = new ViewHolder(mLoadingFragment.createBottomErrorView());
 				break;
 			default:
@@ -64,19 +73,24 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-		int pos = position;
-		if (mShowTopLoading) {
-			pos -= 1;
-		}
-		if (mShowTopError) {
-			pos -= 1;
-		}
-		if (viewHolder.getItemViewType() == 0) {
-			mLoadingFragment.bindTopLoadingView(viewHolder.itemView, ((ViewHolder) viewHolder).mTopLoading);
-		}
-		if (pos >= 0 && pos < mAdapter.getItemCount()) {
-			//noinspection unchecked
-			mAdapter.onBindViewHolder((k) viewHolder, pos);
+		switch (viewHolder.getItemViewType()) {
+			case TYPE_TOP_LOADING:
+				mLoadingFragment.bindTopLoadingView(viewHolder.itemView, ((ViewHolder) viewHolder).mTopLoading);
+				break;
+			case TYPE_TOP_ERROR:
+				break;
+			case TYPE_BOTTOM_LOADING:
+				break;
+			case TYPE_BOTTOM_ERROR:
+				break;
+			default:
+				if (mShowTopLoading) {
+					position -= 1;
+				}
+				if (mShowTopError) {
+					position -= 1;
+				}
+				mAdapter.onBindViewHolder((k) viewHolder, position);
 		}
 	}
 
@@ -123,15 +137,15 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 		} else {
 			int itemCount = getItemCount();
 			if (mShowTopLoading && position == 0) {
-				return 0;
+				return TYPE_TOP_LOADING;
 			} else if ((!mShowTopLoading && mShowTopError && position == 0)
 					|| (mShowTopLoading && mShowTopError && position == 1)) {
-				return 1;
+				return TYPE_TOP_ERROR;
 			} else if (mShowBottomLoading && position == itemCount - 1) {
-				return 2;
+				return TYPE_BOTTOM_LOADING;
 			} else if ((!mShowBottomLoading && mShowBottomError && position == itemCount - 1)
 					|| (mShowBottomLoading && mShowBottomError && position == itemCount - 2)) {
-				return 3;
+				return TYPE_BOTTOM_ERROR;
 			} else {
 				throw new RuntimeException("should not happen");
 			}
