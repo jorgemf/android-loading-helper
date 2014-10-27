@@ -328,12 +328,12 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 	}
 
 	private void setPullToRefresh(float displacement) {
-		if (displacement > mLoadingViewOriginalHeight) {
-			displacement = mLoadingViewOriginalHeight + (displacement - mLoadingViewOriginalHeight) / 2;
-		}
 		float ratioPull = displacement / mPullToRefreshDistance;
 		if (ratioPull > 1) {
 			ratioPull = 1;
+		}
+		if (displacement > mLoadingViewOriginalHeight) {
+			displacement = mLoadingViewOriginalHeight + (displacement - mLoadingViewOriginalHeight) / 2;
 		}
 		float ratioDisplacement = displacement / mLoadingViewOriginalHeight;
 		if (ratioDisplacement > 1) {
@@ -344,7 +344,7 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 		mRecyclerView.scrollBy(variation, 0);
 		mTopLoadingView.requestLayout();
 		mTopLoadingProgressBar.setProgress((int) (PROGRESS_BAR_MAX * ratioPull));
-		mTopLoadingProgressBar.setAlpha(ratioDisplacement);
+		mTopLoadingView.setAlpha(ratioDisplacement);
 		mTopLoadingProgressBar.setScaleX(ratioPull);
 		mTopLoadingProgressBar.setScaleY(ratioPull);
 	}
@@ -356,14 +356,14 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 		float alpha = mTopLoadingView.getAlpha();
 		mPullToRefreshUpdateAnimation = ValueAnimator.ofFloat(alpha, 0);
 		mPullToRefreshUpdateAnimation.setDuration(mPullToRefreshAnimationDuration);
+		mPullToRefreshUpdateAnimation.setInterpolator(mDecelerateInterpolator);
 		mPullToRefreshUpdateAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 			@Override
 			public void onAnimationUpdate(ValueAnimator valueAnimator) {
 				float val = (Float) valueAnimator.getAnimatedValue();
-				mTopLoadingProgressBar.setAlpha(val);
+				mTopLoadingView.setAlpha(val);
 			}
 		});
-		mPullToRefreshUpdateAnimation.setDuration(mPullToRefreshAnimationDuration);
 		mPullToRefreshUpdateAnimation.start();
 		mAdapter.showTopLoading(false);
 		mAdapter.notifyItemRemoved(0);
@@ -396,11 +396,11 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 	protected void bindTopLoadingView(View itemView, ProgressBar topLoading) {
 		mTopLoadingView = itemView;
 		mTopLoadingProgressBar = topLoading;
+//		mTopCircularLoadingDrawable = (CircularLoadingDrawable)topLoading.getProgressDrawable();
 		mTopLoadingView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 		mLoadingViewOriginalHeight = mTopLoadingView.getMeasuredHeight();
 		mTopLoadingView.getLayoutParams().height = 1;
 		mTopLoadingProgressBar.setIndeterminate(false);
-		mTopLoadingView.requestLayout();
 		mTopLoadingView.requestLayout();
 		mRecyclerView.scrollBy(-1, 0);
 	}

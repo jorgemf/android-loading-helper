@@ -17,30 +17,36 @@ public class CircularLoadingDrawable extends Drawable {
 
 	private float mProgress = 0;
 
-	private static final int LINE_WIDTH_DP = 5;
+	private static final int LINE_WIDTH_DP = 4;
 
 	private Paint mPaint;
 
 	private RectF mArcBounds;
 
+	private float mStrokeWidthPx;
+
 	public CircularLoadingDrawable(Context context) {
 		mPaint = new Paint();
 		Resources resources = context.getResources();
-		float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, LINE_WIDTH_DP, resources.getDisplayMetrics());
-		mPaint.setStrokeWidth(px);
-		mPaint.setColor(Color.BLACK);
+		mStrokeWidthPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, LINE_WIDTH_DP, resources.getDisplayMetrics());
+		mPaint.setStyle(Paint.Style.STROKE);
+		mPaint.setStrokeWidth(mStrokeWidthPx);
+		mPaint.setAntiAlias(true);
+		mPaint.setColor(Color.GRAY);
+		mPaint.setStrokeJoin(Paint.Join.ROUND);
+		mPaint.setStrokeCap(Paint.Cap.ROUND);
 		mArcBounds = new RectF();
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
 		Rect bounds = getBounds();
-		int radius = Math.min(bounds.width(), bounds.height()) / 2;
+		int radius = (Math.min(bounds.width(), bounds.height()) - (int) mStrokeWidthPx) / 2;
 		mArcBounds.set(bounds.centerX() - radius,
 				bounds.centerY() - radius,
 				bounds.centerX() + radius,
 				bounds.centerY() + radius);
-		canvas.drawArc(mArcBounds, 0f, 360 * mProgress, false, mPaint);
+		canvas.drawArc(mArcBounds, 270, 360 * mProgress, false, mPaint);
 	}
 
 	@Override
