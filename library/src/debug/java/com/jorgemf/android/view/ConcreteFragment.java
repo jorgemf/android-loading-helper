@@ -97,16 +97,6 @@ public class ConcreteFragment extends LoadingFragment {
 	}
 
 	@Override
-	protected View getTopErrorView() {
-		return null;
-	}
-
-	@Override
-	protected View getBottomErrorView() {
-		return null;
-	}
-
-	@Override
 	protected void clearAdapter() {
 		mFakeAdapter.clear();
 	}

@@ -23,7 +23,7 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 
 	private static final int INVALID_POINTER = -1;
 
-	private static final int PROGRESS_BAR_MAX = 1000;
+	protected static final int PROGRESS_BAR_MAX = 1000;
 
 	private RecyclerView mRecyclerView;
 
@@ -42,8 +42,6 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 	private int mEndlessLoadingPreloadAhead = 0;
 
 	private View mTopLoadingView;
-
-	private View mBottomLoadingView;
 
 	private ProgressBar mTopLoadingProgressBar;
 
@@ -67,8 +65,6 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mTopLoadingView = inflater.inflate(R.layout.view_loading, container, false);
-		mBottomLoadingView = inflater.inflate(R.layout.view_loading, container, false);
 		return inflater.inflate(R.layout.fragment_loading, container, false);
 	}
 
@@ -77,12 +73,6 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 		super.onViewCreated(view, savedInstanceState);
 		mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 		mContentLoadingProgressBar = (ContentLoadingProgressBar) view.findViewById(R.id.center_progressbar);
-		mTopLoadingProgressBar = (ProgressBar) mTopLoadingView.findViewById(R.id.loading_progress_bar);
-		mTopLoadingProgressBar.setMax(PROGRESS_BAR_MAX);
-		mTopLoadingProgressBar.setProgressDrawable(new CircularLoadingDrawable(getActivity()));
-
-		mTopLoadingView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-		mLoadingViewOriginalHeight = mTopLoadingView.getMeasuredHeight();
 
 		// use this setting to improve performance if you know that changes
 		// in content do not change the layout size of the RecyclerView
@@ -93,9 +83,7 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 		mRecyclerView.setLayoutManager(mLayoutManager);
 
 		// specify the adapter
-		mAdapter = new RecyclerAdapter<k>(onCreateAdapter(),
-				mTopLoadingView, mBottomLoadingView,
-				getTopErrorView(), getBottomErrorView());
+		mAdapter = new RecyclerAdapter<k>(onCreateAdapter(), this);
 		mRecyclerView.setAdapter(mAdapter);
 
 		if (mEnableInitialProgressLoading) {
@@ -169,9 +157,21 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 
 	protected abstract void loadInitial();
 
-	protected abstract View getTopErrorView();
+	protected View createTopErrorView() {
+		return null;
+	}
 
-	protected abstract View getBottomErrorView();
+	protected View createBottomErrorView() {
+		return null;
+	}
+
+	protected boolean hasTopErrorView() {
+		return false;
+	}
+
+	protected boolean hasBottomErrorView() {
+		return false;
+	}
 
 	protected synchronized void finishPreloadInitial() {
 		mIsLoadingNext.set(true);
@@ -279,33 +279,27 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 						case MotionEvent.ACTION_MOVE:
 							if (mPullToRefreshInitialY != -1) {
 								float diff = event.getY() - mPullToRefreshInitialY;
-								System.out.println("move diff: " + diff);
 								if (diff > 0) {
 									setPullToRefresh(diff);
 									return true;
 								} else {
-									System.out.println("cancelPullToRefresh diff");
 									mPullToRefreshInitialY = -1;
 									cancelPullToRefresh();
 								}
 							} else {
 								mPullToRefreshInitialY = event.getY();
 								mActivePointerId = pointer;
-								System.out.println("move START: " + mPullToRefreshInitialY);
 								initPullToRefresh();
 							}
 							break;
 						case MotionEvent.ACTION_CANCEL:
 						case MotionEvent.ACTION_UP:
-							System.out.println("move STOP: ");
 							if (mPullToRefreshInitialY != -1) {
 								float diff = event.getY() - mPullToRefreshInitialY;
 								mPullToRefreshInitialY = -1;
 								if (diff > mPullToRefreshDistance) {
-									System.out.println("startPullToRefresh");
 									startPullToRefresh();
 								} else {
-									System.out.println("cancelPullToRefresh");
 									cancelPullToRefresh();
 								}
 							}
@@ -319,16 +313,18 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 	}
 
 	private void initPullToRefresh() {
-		mAdapter.showTopLoading(true);
-		mTopLoadingView.getLayoutParams().height = 1;
-		mRecyclerView.scrollBy(-1, 0);
-		mTopLoadingView.requestLayout();
 		if (mAdapter.isShowTopError()) {
 			mAdapter.showTopError(false);
 			mAdapter.notifyItemRemoved(0);
 		}
-		mTopLoadingProgressBar.setIndeterminate(false);
+		mAdapter.showTopLoading(true);
 		mAdapter.notifyItemInserted(0);
+		if (mTopLoadingView != null) {
+			mTopLoadingView.getLayoutParams().height = 1;
+			mTopLoadingProgressBar.setIndeterminate(false);
+			mTopLoadingView.requestLayout();
+		}
+		mRecyclerView.scrollBy(-1, 0);
 	}
 
 	private void setPullToRefresh(float displacement) {
@@ -397,4 +393,15 @@ public abstract class LoadingFragment<k extends RecyclerView.ViewHolder> extends
 		loadPrevious();
 	}
 
+	protected void bindTopLoadingView(View itemView, ProgressBar topLoading) {
+		mTopLoadingView = itemView;
+		mTopLoadingProgressBar = topLoading;
+		mTopLoadingView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+		mLoadingViewOriginalHeight = mTopLoadingView.getMeasuredHeight();
+		mTopLoadingView.getLayoutParams().height = 1;
+		mTopLoadingProgressBar.setIndeterminate(false);
+		mTopLoadingView.requestLayout();
+		mTopLoadingView.requestLayout();
+		mRecyclerView.scrollBy(-1, 0);
+	}
 }
