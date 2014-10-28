@@ -1,6 +1,7 @@
 package com.jorgemf.android.loading;
 
-import android.graphics.Color;
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,13 @@ import android.widget.ProgressBar;
 
 import com.jorgemf.android.view.R;
 
-public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+/**
+ * Recycler adapter wrapper which adds to a recycler adapter views for loading items.
+ *
+ * @param <k> ViewHolder of the adapter
+ */
+public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends RecyclerView
+		.Adapter<RecyclerView.ViewHolder> {
 
 	private static final int TYPE_TOP_LOADING = 0;
 
@@ -28,13 +35,31 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 
 	private boolean mShowBottomError;
 
-	private LoadingFragment mLoadingFragment;
+	private final Context mContext;
 
-	private RecyclerView.Adapter mAdapter;
+	private LoadingHelper mLoadingHelper;
 
-	public RecyclerAdapter(RecyclerView.Adapter<k> adapter, LoadingFragment loadingFragment) {
+	private final RecyclerView.Adapter mAdapter;
+
+	private final LoadingHelper.ErrorViewsCreator mErrorViewsCreator;
+
+	/**
+	 * Default constructor, it requires the adapter which will wrap and the loading fragment in
+	 * order to bind the top loading view.
+	 *
+	 * @param loadingHelper     Loading helper used to bind the top loading view
+	 * @param adapter           Adapter with the data
+	 * @param errorViewsCreator Class which create the error views
+	 * @param context           Context for the adapter
+	 */
+	public RecyclerAdapter(@NonNull LoadingHelper loadingHelper,
+	                       @NonNull RecyclerView.Adapter<k> adapter,
+	                       @NonNull LoadingHelper.ErrorViewsCreator errorViewsCreator,
+	                       @NonNull Context context) {
+		mLoadingHelper = loadingHelper;
 		mAdapter = adapter;
-		mLoadingFragment = loadingFragment;
+		mErrorViewsCreator = errorViewsCreator;
+		mContext = context;
 		mShowTopLoading = false;
 		mShowBottomLoading = false;
 		mShowTopError = false;
@@ -46,24 +71,26 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 		RecyclerView.ViewHolder viewHolder;
 		switch (type) {
 			case TYPE_TOP_LOADING:
-				View topLoadingView = LayoutInflater.from(mLoadingFragment.getActivity())
+				View topLoadingView = LayoutInflater.from(mContext)
 						.inflate(R.layout.view_loading, viewGroup, false);
 				ViewHolder topViewHolder = new ViewHolder(topLoadingView);
-				topViewHolder.mTopLoading = (ProgressBar) topLoadingView.findViewById(R.id.loading_progress_bar);
-				topViewHolder.mTopLoading.setMax(LoadingFragment.PROGRESS_BAR_MAX);
-				topViewHolder.mTopLoading.setProgressDrawable(new CircularLoadingDrawable(mLoadingFragment.getActivity()));
+				topViewHolder.mTopLoading = (ProgressBar)
+						topLoadingView.findViewById(R.id.loading_progress_bar);
+				topViewHolder.mTopLoading.setMax(LoadingHelper.PROGRESS_BAR_MAX);
+				topViewHolder.mTopLoading.setProgressDrawable(
+						new CircularLoadingDrawable(mContext));
 				viewHolder = topViewHolder;
 				break;
 			case TYPE_TOP_ERROR:
-				viewHolder = new ViewHolder(mLoadingFragment.createTopErrorView());
+				viewHolder = new ViewHolder(mErrorViewsCreator.createTopErrorView(viewGroup));
 				break;
 			case TYPE_BOTTOM_LOADING:
-				View bottomLoadingView = LayoutInflater.from(mLoadingFragment.getActivity())
+				View bottomLoadingView = LayoutInflater.from(mContext)
 						.inflate(R.layout.view_loading, viewGroup, false);
 				viewHolder = new ViewHolder(bottomLoadingView);
 				break;
 			case TYPE_BOTTOM_ERROR:
-				viewHolder = new ViewHolder(mLoadingFragment.createBottomErrorView());
+				viewHolder = new ViewHolder(mErrorViewsCreator.createBottomErrorView(viewGroup));
 				break;
 			default:
 				viewHolder = mAdapter.onCreateViewHolder(viewGroup, type - 4);
@@ -75,7 +102,9 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
 		switch (viewHolder.getItemViewType()) {
 			case TYPE_TOP_LOADING:
-				mLoadingFragment.bindTopLoadingView(viewHolder.itemView, ((ViewHolder) viewHolder).mTopLoading);
+				//noinspection unchecked
+				mLoadingHelper.bindTopLoadingView(viewHolder.itemView,
+						((ViewHolder) viewHolder).mTopLoading);
 				break;
 			case TYPE_TOP_ERROR:
 				break;
@@ -90,6 +119,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 				if (mShowTopError) {
 					position -= 1;
 				}
+				//noinspection unchecked
 				mAdapter.onBindViewHolder((k) viewHolder, position);
 		}
 	}
@@ -112,6 +142,10 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 		return mAdapter.getItemCount() + countAdd;
 	}
 
+	/**
+	 * @return The number of items of the adapter with the data. It does not include the headar and
+	 * footer views for loading items.
+	 */
 	public int getAdapterItemCount() {
 		return mAdapter.getItemCount();
 	}
@@ -152,42 +186,74 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 		}
 	}
 
+	/**
+	 * Whether to show or not the top loading view.
+	 *
+	 * @param show
+	 */
 	public void showTopLoading(boolean show) {
 		if (mShowTopLoading != show) {
 			mShowTopLoading = show;
 		}
 	}
 
+	/**
+	 * Whether to show or not the top error view. Only used if there is an error view.
+	 *
+	 * @param show
+	 */
 	public void showTopError(boolean show) {
-		if (mShowTopError != show && mLoadingFragment.hasTopErrorView()) {
+		if (mShowTopError != show && mErrorViewsCreator.hasTopErrorView()) {
 			mShowTopError = show;
 		}
 	}
 
+	/**
+	 * Whether to show or not the bottom loading view.
+	 *
+	 * @param show
+	 */
 	public void showBottomLoading(boolean show) {
 		if (mShowBottomLoading != show) {
 			mShowBottomLoading = show;
 		}
 	}
 
+	/**
+	 * Whether to show or not the bottom error view. Only used if there is an error view.
+	 *
+	 * @param show
+	 */
 	public void showBottomError(boolean show) {
-		if (mShowBottomError != show && mLoadingFragment.hasBottomErrorView()) {
+		if (mShowBottomError != show && mErrorViewsCreator.hasBottomErrorView()) {
 			mShowBottomError = show;
 		}
 	}
 
+	/**
+	 * @return true if the top loading view is being displayed
+	 */
 	public boolean isShowTopLoading() {
 		return mShowTopLoading;
 	}
 
+	/**
+	 * @return true if the bottom loading view is being displayed
+	 */
 	public boolean isShowBottomLoading() {
 		return mShowBottomLoading;
 	}
 
+	/**
+	 * @return true if the top error view is being displayed
+	 */
 	public boolean isShowTopError() {
 		return mShowTopError;
 	}
 
+	/**
+	 * @return true if the bottom error view is being displayed
+	 */
 	public boolean isShowBottomError() {
 		return mShowBottomError;
 	}

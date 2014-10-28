@@ -11,6 +11,9 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
+/**
+ * Simple circular loading drawable with progression.
+ */
 public class CircularLoadingDrawable extends Drawable {
 
 	private static final int MAXIMUM_LEVEL = 10000;
@@ -28,7 +31,8 @@ public class CircularLoadingDrawable extends Drawable {
 	public CircularLoadingDrawable(Context context) {
 		mPaint = new Paint();
 		Resources resources = context.getResources();
-		mStrokeWidthPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, LINE_WIDTH_DP, resources.getDisplayMetrics());
+		mStrokeWidthPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, LINE_WIDTH_DP,
+				resources.getDisplayMetrics());
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(mStrokeWidthPx);
 		mPaint.setAntiAlias(true);
@@ -46,7 +50,8 @@ public class CircularLoadingDrawable extends Drawable {
 				bounds.centerY() - radius,
 				bounds.centerX() + radius,
 				bounds.centerY() + radius);
-		canvas.drawArc(mArcBounds, 270 /* (90 + 540 * mProgress) % 360 */, 360 * mProgress, false, mPaint);
+		/* (90 + 540 * mProgress) % 360 */
+		canvas.drawArc(mArcBounds, 270, 360 * mProgress, false, mPaint);
 	}
 
 	@Override
