@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ProgressBar;
 
-import com.jorgemf.android.view.R;
+import com.jorgemf.android.loading.R;
 
 /**
  * Recycler adapter wrapper which adds to a recycler adapter views for loading items.

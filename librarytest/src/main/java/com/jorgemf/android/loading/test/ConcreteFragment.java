@@ -1,4 +1,4 @@
-package com.jorgemf.android.view;
+package com.jorgemf.android.loading.test;
 
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jorgemf.android.loading.LoadingHelper;
+import com.jorgemf.android.loading.test.R;
 
 public class ConcreteFragment extends Fragment implements LoadingHelper.LoadListener {
 

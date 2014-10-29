@@ -14,8 +14,6 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ProgressBar;
 
-import com.jorgemf.android.view.R;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**

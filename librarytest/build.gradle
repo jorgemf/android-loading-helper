@@ -1,0 +1,16 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.0.2"
+
+    defaultConfig {
+        applicationId "com.jorgemf.android.loading.test"
+        minSdkVersion 15
+        targetSdkVersion 21
+    }
+}
+
+dependencies {
+    compile project(':library')
+}
