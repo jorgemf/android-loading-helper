@@ -146,7 +146,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		});
 		mRecyclerView.setOnTouchListener(this);
 		Resources resources = activity.getResources();
-		mPullToRefreshDistance = resources.getDimensionPixelSize(R.dimen.pull_refresh_distance);
+		mPullToRefreshDistance = resources.getDimensionPixelSize(R.dimen.loading_helper_pull_refresh_distance);
 		mPullToRefreshAnimationDuration = resources.getInteger(
 				android.R.integer.config_mediumAnimTime);
 	}
@@ -175,7 +175,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 * initial
 	 * loading wont do anything unless you restart the fragment.
 	 *
-	 * @param enable
+	 * @param enable whether the initial progress loading is enabled or not
 	 * @see LoadListener#loadInitial()
 	 */
 	public void enableInitialProgressLoading(boolean enable) {
@@ -185,7 +185,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	/**
 	 * Whether the pull to refresh is enabled for the fragment or not.
 	 *
-	 * @param enable
+	 * @param enable whether the pull to refresh loading is enabled or not
 	 * @see LoadListener#loadPrevious()
 	 */
 	public void enablePullToRefreshUpdate(boolean enable) {
@@ -195,7 +195,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	/**
 	 * Whether the endless loading is enabled for the fragment or not.
 	 *
-	 * @param enable
+	 * @param enable  whether endless loading is enabled or not
 	 * @see LoadListener#loadNext()
 	 */
 	public void enableEndlessLoading(boolean enable) {
