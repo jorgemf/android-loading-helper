@@ -10,7 +10,7 @@ import android.widget.ListAdapter;
  * @param <k> ViewHolder used for the recycler adapter.
  */
 public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> extends
-		RecyclerView.Adapter<k> implements ListAdapter {
+		RecyclerView.Adapter<k>{
 
 	private Cursor mCursor;
 
@@ -32,7 +32,7 @@ public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> e
 	}
 
 	/**
-	 * @return The current cursor of the adapte.
+	 * @return The current cursor of the adapter.
 	 */
 	public Cursor getCursor() {
 		return mCursor;
@@ -62,7 +62,7 @@ public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> e
 		}
 		Cursor oldCursor = mCursor;
 		mCursor = newCursor;
-		findIndexes();
+		findIndexes(mCursor);
 		return oldCursor;
 	}
 
@@ -70,7 +70,7 @@ public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> e
 	 * Helper method called each time the cursor is changed, useful to get the indexes of the
 	 * columns.
 	 */
-	public abstract void findIndexes();
+	public abstract void findIndexes(Cursor cursor);
 
 	/**
 	 * Wrapper method of the w#onBindViewHolder

@@ -146,7 +146,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		});
 		mRecyclerView.setOnTouchListener(this);
 		Resources resources = activity.getResources();
-		mPullToRefreshDistance = resources.getDimensionPixelSize(R.dimen.loading_helper_pull_refresh_distance);
+		mPullToRefreshDistance = resources.getDimensionPixelSize(R.dimen
+				.loading_helper_pull_refresh_distance);
 		mPullToRefreshAnimationDuration = resources.getInteger(
 				android.R.integer.config_mediumAnimTime);
 	}
@@ -195,7 +196,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	/**
 	 * Whether the endless loading is enabled for the fragment or not.
 	 *
-	 * @param enable  whether endless loading is enabled or not
+	 * @param enable whether endless loading is enabled or not
 	 * @see LoadListener#loadNext()
 	 */
 	public void enableEndlessLoading(boolean enable) {
@@ -235,7 +236,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#loadPrevious()
 	 */
 	public synchronized void finishLoadingPrevious(boolean showTopErrorView,
-	                                                  int dataInserted) {
+	                                               int dataInserted) {
 		if (mIsLoadingPrevious.getAndSet(false)) {
 			mAdapter.showTopLoading(false);
 			mAdapter.notifyItemRemoved(0);
@@ -293,6 +294,30 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			}
 		}
 	}
+
+	/**
+	 * When an error is displayed at the top this method tries again to load the previous items
+	 * again.
+	 */
+	public void retryLoadPrevious() {
+		if (mAdapter.isShowTopLoading() && mEnabledPullToRefresUpdate &&
+				!mIsLoadingPrevious.get()) {
+			initPullToRefresh();
+		}
+	}
+
+
+	/**
+	 * When an error is displayed at the bottom this method tries again to load the next items
+	 * again.
+	 */
+	public void retryLoadNext() {
+		if (mAdapter.isShowBottomError() && mEnableEndlessLoading &&
+				!mIsLoadingNext.get()) {
+			checkLoadNext();
+		}
+	}
+
 	/**
 	 * Starts the loading process.
 	 */
@@ -395,20 +420,22 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	private void initPullToRefresh() {
-		if (mAdapter.isShowTopError()) {
-			mAdapter.showTopError(false);
-			mAdapter.notifyItemRemoved(0);
+		if (!mIsLoadingPrevious.getAndSet(true)) {
+			if (mAdapter.isShowTopError()) {
+				mAdapter.showTopError(false);
+				mAdapter.notifyItemRemoved(0);
+			}
+			if (!mAdapter.isShowTopLoading()) {
+				mAdapter.showTopLoading(true);
+				mAdapter.notifyItemInserted(0);
+			}
+			if (mTopLoadingView != null) {
+				mTopLoadingView.getLayoutParams().height = 1;
+				mTopLoadingProgressBar.setIndeterminate(false);
+				mTopLoadingView.requestLayout();
+			}
+			mRecyclerView.scrollBy(-1, 0);
 		}
-		if (!mAdapter.isShowTopLoading()) {
-			mAdapter.showTopLoading(true);
-			mAdapter.notifyItemInserted(0);
-		}
-		if (mTopLoadingView != null) {
-			mTopLoadingView.getLayoutParams().height = 1;
-			mTopLoadingProgressBar.setIndeterminate(false);
-			mTopLoadingView.requestLayout();
-		}
-		mRecyclerView.scrollBy(-1, 0);
 	}
 
 	private void setPullToRefresh(float displacement) {
@@ -509,7 +536,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		 * @param root parent view of the new view created
 		 * @return Create a new error view for the top
 		 */
-		public View createTopErrorView(ViewGroup root) ;
+		public View createTopErrorView(ViewGroup root);
 
 		/**
 		 * @param root parent view of the new view created
@@ -526,7 +553,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		/**
 		 * @return true if it can create bottom error views
 		 */
-		public boolean hasBottomErrorView() ;
+		public boolean hasBottomErrorView();
 	}
 
 	/**
