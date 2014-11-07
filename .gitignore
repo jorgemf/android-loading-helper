@@ -8,13 +8,12 @@
 .settings/
 
 # Intellij
-.idea/
+.idea
 !.idea/codeStyleSettings.xml
 !.idea/encodings.xml
 !.idea/gradle.xml
 !.idea/modules.xml
 !.idea/vcs.xml
-*.iml
 *.iws
 
 # Mac
