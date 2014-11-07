@@ -508,6 +508,13 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
+	 * @return returns true if it is loading the previous or next items.
+	 */
+	public boolean isLoading(){
+		return mIsLoadingNext.get() || mIsLoadingPrevious.get();
+	}
+
+	/**
 	 * Binds the top loading view. This is required in order to deal with the pull to refresh
 	 * function.
 	 *
