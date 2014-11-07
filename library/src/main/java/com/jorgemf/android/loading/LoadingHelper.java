@@ -30,9 +30,9 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 */
 	protected static final int PROGRESS_BAR_MAX = 1000;
 
-	private final AtomicBoolean mIsLoadingNext = new AtomicBoolean(false);
+	private final AtomicBoolean mIsLoadingNext;
 
-	private final AtomicBoolean mIsLoadingPrevious = new AtomicBoolean(false);
+	private final AtomicBoolean mIsLoadingPrevious;
 
 	private final LoadListener mLoadListener;
 
@@ -99,6 +99,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		mDecelerateInterpolator = new DecelerateInterpolator(2f);
 		mActivePointerId = INVALID_POINTER;
 		mPullToRefreshInitialY = -1;
+		mIsLoadingNext = new AtomicBoolean(false);
+		mIsLoadingPrevious = new AtomicBoolean(false);
 
 		setLayoutManager(new LinearLayoutManager(activity));
 
@@ -146,8 +148,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		});
 		mRecyclerView.setOnTouchListener(this);
 		Resources resources = activity.getResources();
-		mPullToRefreshDistance = resources.getDimensionPixelSize(R.dimen
-				.loading_helper_pull_refresh_distance);
+		mPullToRefreshDistance = resources.getDimensionPixelSize(
+				R.dimen.loading_helper_pull_refresh_distance);
 		mPullToRefreshAnimationDuration = resources.getInteger(
 				android.R.integer.config_mediumAnimTime);
 	}
@@ -254,10 +256,11 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 *
 	 * @param showBottomErrorView whether to show or not the bottom error view
 	 * @param dataInserted        Number of elements inserted after the last element
+	 * @param keepLoading         whether to try to load the next elements or not
 	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#loadNext()
 	 */
 	public synchronized void finishLoadingNext(boolean showBottomErrorView,
-	                                           int dataInserted) {
+	                                           int dataInserted, boolean keepLoading) {
 		if (mIsLoadingNext.getAndSet(false)) {
 			mAdapter.showBottomLoading(false);
 			int itemCount = mAdapter.getItemCount();
@@ -265,9 +268,13 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			if (showBottomErrorView) {
 				mAdapter.showBottomError(true);
 				mAdapter.notifyItemInserted(itemCount);
-			} else if (dataInserted > 0) {
-				mAdapter.notifyItemRangeInserted(itemCount - dataInserted, dataInserted);
-				checkLoadNext();
+			} else {
+				if (dataInserted > 0) {
+					mAdapter.notifyItemRangeInserted(itemCount - dataInserted, dataInserted);
+				}
+				if (keepLoading) {
+					checkLoadNext();
+				}
 			}
 		}
 	}
@@ -277,9 +284,11 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 *
 	 * @param showTopErrorView whether to show or not the top error view
 	 * @param dataInserted     Number of elements inserted
+	 * @param keepLoading      whether to try to load the next elements or not
 	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#loadInitial()
 	 */
-	public synchronized void finishLoadingInitial(boolean showTopErrorView, int dataInserted) {
+	public synchronized void finishLoadingInitial(boolean showTopErrorView, int dataInserted,
+	                                              boolean keepLoading) {
 		if (mEnableInitialProgressLoading) {
 			mContentLoadingProgressBar.hide();
 		}
@@ -288,9 +297,13 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			if (showTopErrorView) {
 				mAdapter.showTopError(true);
 				mAdapter.notifyItemInserted(0);
-			} else if (dataInserted > 0) {
-				mAdapter.notifyItemRangeInserted(0, dataInserted);
-				checkLoadNext();
+			} else {
+				if (dataInserted > 0) {
+					mAdapter.notifyItemRangeInserted(0, dataInserted);
+				}
+				if (keepLoading) {
+					checkLoadNext();
+				}
 			}
 		}
 	}
@@ -508,6 +521,13 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
+	 * @return returns true if it is loading the previous or next items.
+	 */
+	public boolean isLoading() {
+		return mIsLoadingNext.get() || mIsLoadingPrevious.get();
+	}
+
+	/**
 	 * Binds the top loading view. This is required in order to deal with the pull to refresh
 	 * function.
 	 *
@@ -590,7 +610,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		 * Method called when the user is reaching the end of the elements and it needs to load
 		 * more. After finish the loading you must call the method #finishLoadingNext(boolean, int)
 		 *
-		 * @see #finishLoadingNext(boolean, int)
+		 * @see #finishLoadingNext(boolean, int, boolean)
 		 */
 		public void loadNext();
 
@@ -599,7 +619,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		 * Method called to load the first items. After finish the loading you must call the method
 		 * #finishLoadingInitial(boolean, int)
 		 *
-		 * @see #finishLoadingInitial(boolean, int)
+		 * @see #finishLoadingInitial(boolean, int, boolean)
 		 */
 		public void loadInitial();
 	}

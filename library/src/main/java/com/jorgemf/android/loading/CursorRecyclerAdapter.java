@@ -2,7 +2,6 @@ package com.jorgemf.android.loading;
 
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ListAdapter;
 
 /**
  * Helper class to use a cursor in the recycler adapter.
@@ -10,7 +9,7 @@ import android.widget.ListAdapter;
  * @param <k> ViewHolder used for the recycler adapter.
  */
 public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> extends
-		RecyclerView.Adapter<k>{
+		RecyclerView.Adapter<k> {
 
 	private Cursor mCursor;
 
@@ -18,8 +17,8 @@ public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> e
 	public final void onBindViewHolder(k holder, int position) {
 		if (mCursor != null && !mCursor.isClosed()) {
 			mCursor.moveToPosition(position);
-			onBindViewHolder(holder, mCursor, position);
 		}
+		onBindViewHolder(holder, mCursor, position);
 	}
 
 	@Override

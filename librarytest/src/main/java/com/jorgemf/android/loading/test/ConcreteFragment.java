@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jorgemf.android.loading.LoadingHelper;
-import com.jorgemf.android.loading.test.R;
 
 public class ConcreteFragment extends Fragment implements LoadingHelper.LoadListener {
 
@@ -70,7 +69,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 	@Override
 	public void onResume() {
 		super.onResume();
-//		mLoadingHelper.onResume();
+		mLoadingHelper.onResume();
 	}
 
 	@Override
@@ -119,10 +118,10 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 				super.onPostExecute(aVoid);
 				if (Math.random() < 0.1) {
 					mLoadingHelper.enableEndlessLoading(false);
-					mLoadingHelper.finishLoadingNext(true, 0);
+					mLoadingHelper.finishLoadingNext(true, 0, true);
 				} else {
 					mFakeAdapter.add(4);
-					mLoadingHelper.finishLoadingNext(false, 4);
+					mLoadingHelper.finishLoadingNext(false, 4, true);
 				}
 			}
 		};
@@ -146,7 +145,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 			protected void onPostExecute(Void aVoid) {
 				super.onPostExecute(aVoid);
 				mFakeAdapter.add(27);
-				mLoadingHelper.finishLoadingInitial(false, 27);
+				mLoadingHelper.finishLoadingInitial(false, 27, true);
 			}
 		};
 		asyncTask.execute();
