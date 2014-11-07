@@ -61,7 +61,9 @@ public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> e
 		}
 		Cursor oldCursor = mCursor;
 		mCursor = newCursor;
-		findIndexes(mCursor);
+		if (mCursor != null) {
+			findIndexes(mCursor);
+		}
 		return oldCursor;
 	}
 
