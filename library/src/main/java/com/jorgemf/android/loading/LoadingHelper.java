@@ -254,10 +254,11 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 *
 	 * @param showBottomErrorView whether to show or not the bottom error view
 	 * @param dataInserted        Number of elements inserted after the last element
+	 * @param keepLoading         whether to try to load the next elements or not
 	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#loadNext()
 	 */
 	public synchronized void finishLoadingNext(boolean showBottomErrorView,
-	                                           int dataInserted) {
+	                                           int dataInserted, boolean keepLoading) {
 		if (mIsLoadingNext.getAndSet(false)) {
 			mAdapter.showBottomLoading(false);
 			int itemCount = mAdapter.getItemCount();
@@ -265,9 +266,13 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			if (showBottomErrorView) {
 				mAdapter.showBottomError(true);
 				mAdapter.notifyItemInserted(itemCount);
-			} else if (dataInserted > 0) {
-				mAdapter.notifyItemRangeInserted(itemCount - dataInserted, dataInserted);
-				checkLoadNext();
+			} else {
+				if (dataInserted > 0) {
+					mAdapter.notifyItemRangeInserted(itemCount - dataInserted, dataInserted);
+				}
+				if (keepLoading) {
+					checkLoadNext();
+				}
 			}
 		}
 	}
@@ -277,9 +282,11 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 *
 	 * @param showTopErrorView whether to show or not the top error view
 	 * @param dataInserted     Number of elements inserted
+	 * @param keepLoading      whether to try to load the next elements or not
 	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#loadInitial()
 	 */
-	public synchronized void finishLoadingInitial(boolean showTopErrorView, int dataInserted) {
+	public synchronized void finishLoadingInitial(boolean showTopErrorView, int dataInserted,
+	                                              boolean keepLoading) {
 		if (mEnableInitialProgressLoading) {
 			mContentLoadingProgressBar.hide();
 		}
@@ -288,9 +295,13 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			if (showTopErrorView) {
 				mAdapter.showTopError(true);
 				mAdapter.notifyItemInserted(0);
-			} else if (dataInserted > 0) {
-				mAdapter.notifyItemRangeInserted(0, dataInserted);
-				checkLoadNext();
+			} else {
+				if (dataInserted > 0) {
+					mAdapter.notifyItemRangeInserted(0, dataInserted);
+				}
+				if (keepLoading) {
+					checkLoadNext();
+				}
 			}
 		}
 	}
@@ -510,7 +521,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	/**
 	 * @return returns true if it is loading the previous or next items.
 	 */
-	public boolean isLoading(){
+	public boolean isLoading() {
 		return mIsLoadingNext.get() || mIsLoadingPrevious.get();
 	}
 

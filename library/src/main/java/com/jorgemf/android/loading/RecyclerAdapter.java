@@ -17,13 +17,13 @@ import android.widget.ProgressBar;
 public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends RecyclerView
 		.Adapter<RecyclerView.ViewHolder> {
 
-	private static final int TYPE_TOP_LOADING = 0;
+	private static final int TYPE_TOP_LOADING = -2;
 
-	private static final int TYPE_TOP_ERROR = 1;
+	private static final int TYPE_TOP_ERROR = -3;
 
-	private static final int TYPE_BOTTOM_LOADING = 2;
+	private static final int TYPE_BOTTOM_LOADING = -4;
 
-	private static final int TYPE_BOTTOM_ERROR = 3;
+	private static final int TYPE_BOTTOM_ERROR = -5;
 
 	private boolean mShowTopLoading;
 
@@ -91,7 +91,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 				viewHolder = new ViewHolder(mErrorViewsCreator.createBottomErrorView(viewGroup));
 				break;
 			default:
-				viewHolder = mAdapter.onCreateViewHolder(viewGroup, type - 4);
+				viewHolder = mAdapter.onCreateViewHolder(viewGroup, type);
 		}
 		return viewHolder;
 	}
@@ -162,7 +162,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 			if (itemType == Adapter.IGNORE_ITEM_VIEW_TYPE) {
 				return itemType;
 			} else if (itemType >= 0) {
-				return itemType + 4;
+				return itemType;
 			} else {
 				return itemType;
 			}
