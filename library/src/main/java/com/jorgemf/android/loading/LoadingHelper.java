@@ -433,22 +433,20 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	private void initPullToRefresh() {
-		if (!mIsLoadingPrevious.getAndSet(true)) {
-			if (mAdapter.isShowTopError()) {
-				mAdapter.showTopError(false);
-				mAdapter.notifyItemRemoved(0);
-			}
-			if (!mAdapter.isShowTopLoading()) {
-				mAdapter.showTopLoading(true);
-				mAdapter.notifyItemInserted(0);
-			}
-			if (mTopLoadingView != null) {
-				mTopLoadingView.getLayoutParams().height = 1;
-				mTopLoadingProgressBar.setIndeterminate(false);
-				mTopLoadingView.requestLayout();
-			}
-			mRecyclerView.scrollBy(-1, 0);
+		if (mAdapter.isShowTopError()) {
+			mAdapter.showTopError(false);
+			mAdapter.notifyItemRemoved(0);
 		}
+		if (!mAdapter.isShowTopLoading()) {
+			mAdapter.showTopLoading(true);
+			mAdapter.notifyItemInserted(0);
+		}
+		if (mTopLoadingView != null) {
+			mTopLoadingView.getLayoutParams().height = 1;
+			mTopLoadingProgressBar.setIndeterminate(false);
+			mTopLoadingView.requestLayout();
+		}
+		mRecyclerView.scrollBy(-1, 0);
 	}
 
 	private void setPullToRefresh(float displacement) {
