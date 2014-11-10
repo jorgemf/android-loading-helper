@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
@@ -69,6 +70,10 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	private int mActivePointerId;
 
 	private final DecelerateInterpolator mDecelerateInterpolator;
+
+	private View.OnTouchListener mTouchListener;
+
+	private GridSpanSize mGridSpanSize;
 
 	/**
 	 * Default constructor
@@ -155,14 +160,27 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
-	 * Sets the layout manager of the recycler view.
+	 * Sets the layout manager of the recycler view. If the layout manager is a GridLayoutManager
+	 * the span size lookup is changed in order to make the pull to refresh use the whole width of
+	 * the view.
 	 *
 	 * @param layoutManager The new layout manager.
 	 * @see android.support.v7.widget.LinearLayoutManager
+	 * @see android.support.v7.widget.GridLayoutManager
+	 * @see android.support.v7.widget.GridLayoutManager#setSpanSizeLookup(
+	 *android.support.v7.widget.GridLayoutManager.SpanSizeLookup)
 	 */
 	public void setLayoutManager(@NonNull LinearLayoutManager layoutManager) {
 		mLayoutManager = layoutManager;
 		mRecyclerView.setLayoutManager(mLayoutManager);
+		if (layoutManager instanceof GridLayoutManager) {
+			GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+			if (mGridSpanSize == null) {
+				mGridSpanSize = new GridSpanSize(gridLayoutManager.getSpanSizeLookup());
+				mGridSpanSize.setSpanIndexCacheEnabled(false);
+			}
+			gridLayoutManager.setSpanSizeLookup(mGridSpanSize);
+		}
 	}
 
 	/**
@@ -429,7 +447,20 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 				}
 			}
 		}
+		if (mTouchListener != null) {
+			mTouchListener.onTouch(v, event);
+		}
 		return false;
+	}
+
+	/**
+	 * Sets a touch listener for handling gestures in the recycler view. The results of the touch
+	 * listener are not taking into account to return in the onTouch method.
+	 *
+	 * @param touchListener The touch listener to handle the gestures in the recycler view.
+	 */
+	public void setOnTouchListener(View.OnTouchListener touchListener) {
+		mTouchListener = touchListener;
 	}
 
 	private void initPullToRefresh() {
@@ -620,5 +651,34 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		 * @see #finishLoadingInitial(boolean, int, boolean)
 		 */
 		public void loadInitial();
+	}
+
+	/**
+	 * A replacement for SpanSizeLookup for the GridLayoutManager of the RecyclervView.
+	 *
+	 * @see android.support.v7.widget.GridLayoutManager.SpanSizeLookup
+	 */
+	public class GridSpanSize extends GridLayoutManager.SpanSizeLookup {
+
+		private GridLayoutManager.SpanSizeLookup mSpanSizeLookUpWrapped;
+
+		public GridSpanSize(GridLayoutManager.SpanSizeLookup spanSizeLookUpWrapped) {
+			mSpanSizeLookUpWrapped = spanSizeLookUpWrapped;
+		}
+
+		@Override
+		public int getSpanSize(int position) {
+			if (mAdapter.isShowTopLoading()) {
+				position -= 1;
+			}
+			if (mAdapter.isShowTopError()) {
+				position -= 1;
+			}
+			if (position < 0) {
+				return 1;
+			} else {
+				return mSpanSizeLookUpWrapped.getSpanSize(position);
+			}
+		}
 	}
 }
