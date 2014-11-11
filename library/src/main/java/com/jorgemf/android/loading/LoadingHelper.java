@@ -176,8 +176,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		if (layoutManager instanceof GridLayoutManager) {
 			GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
 			if (mGridSpanSize == null) {
-				mGridSpanSize = new GridSpanSize(gridLayoutManager.getSpanSizeLookup());
-				mGridSpanSize.setSpanIndexCacheEnabled(false);
+				mGridSpanSize = new GridSpanSize(gridLayoutManager);
 			}
 			gridLayoutManager.setSpanSizeLookup(mGridSpanSize);
 		}
@@ -662,8 +661,11 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 
 		private GridLayoutManager.SpanSizeLookup mSpanSizeLookUpWrapped;
 
-		public GridSpanSize(GridLayoutManager.SpanSizeLookup spanSizeLookUpWrapped) {
-			mSpanSizeLookUpWrapped = spanSizeLookUpWrapped;
+		private int mSpanCount;
+
+		public GridSpanSize(GridLayoutManager gridLayoutManager) {
+			mSpanSizeLookUpWrapped = gridLayoutManager.getSpanSizeLookup();
+			mSpanCount = gridLayoutManager.getSpanCount();
 		}
 
 		@Override
@@ -675,9 +677,24 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 				position -= 1;
 			}
 			if (position < 0) {
-				return 1;
+				return mSpanCount;
 			} else {
 				return mSpanSizeLookUpWrapped.getSpanSize(position);
+			}
+		}
+
+		@Override
+		public int getSpanIndex(int position, int spanCount) {
+			if (mAdapter.isShowTopLoading()) {
+				position -= 1;
+			}
+			if (mAdapter.isShowTopError()) {
+				position -= 1;
+			}
+			if (position < 0) {
+				return 0;
+			} else {
+				return mSpanSizeLookUpWrapped.getSpanIndex(position, spanCount);
 			}
 		}
 	}
