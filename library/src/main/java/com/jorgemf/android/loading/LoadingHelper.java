@@ -692,7 +692,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 				position -= 1;
 			}
 			if (position < 0) {
-				return 0;
+				return spanCount - 1;
 			} else {
 				return mSpanSizeLookUpWrapped.getSpanIndex(position, spanCount);
 			}
