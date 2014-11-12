@@ -75,6 +75,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 
 	private GridSpanSize mGridSpanSize;
 
+	private RecyclerView.OnScrollListener mOnScrollListener;
+
 	/**
 	 * Default constructor
 	 *
@@ -144,11 +146,17 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+				if (mOnScrollListener != null) {
+					mOnScrollListener.onScrollStateChanged(recyclerView, newState);
+				}
 			}
 
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 				checkLoadNext();
+				if (mOnScrollListener != null) {
+					mOnScrollListener.onScrolled(recyclerView, dx, dy);
+				}
 			}
 		});
 		mRecyclerView.setOnTouchListener(this);
@@ -572,6 +580,15 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		mTopLoadingProgressBar.setIndeterminate(false);
 		mTopLoadingView.requestLayout();
 		mRecyclerView.scrollBy(-1, 0);
+	}
+
+	/**
+	 * Sets an onScrollListener on the recycler view.
+	 *
+	 * @param onScrollListener The scroll listener.
+	 */
+	public void setOnScrollListener(RecyclerView.OnScrollListener onScrollListener) {
+		mOnScrollListener = onScrollListener;
 	}
 
 	/**
