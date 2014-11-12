@@ -310,7 +310,6 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			mContentLoadingProgressBar.hide();
 		}
 		if (mIsLoadingNext.getAndSet(false)) {
-			mIsLoadingNext.set(false);
 			if (showTopErrorView) {
 				mAdapter.showTopError(true);
 				mAdapter.notifyItemInserted(0);
