@@ -315,7 +315,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 				mAdapter.notifyItemInserted(0);
 			} else {
 				if (dataInserted > 0) {
-					mAdapter.notifyItemRangeInserted(0, dataInserted);
+					int itemCount = mAdapter.getItemCount();
+					mAdapter.notifyItemRangeInserted(itemCount - dataInserted, dataInserted);
 				}
 				if (keepLoading) {
 					checkLoadNext();
