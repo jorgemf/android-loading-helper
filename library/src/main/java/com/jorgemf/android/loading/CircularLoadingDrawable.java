@@ -17,11 +17,8 @@ import android.util.TypedValue;
 public class CircularLoadingDrawable extends Drawable {
 
 	private static final int MAXIMUM_LEVEL = 10000;
-
-	private float mProgress = 0;
-
 	private static final int LINE_WIDTH_DP = 4;
-
+	private float mProgress = 0;
 	private Paint mPaint;
 
 	private RectF mArcBounds;

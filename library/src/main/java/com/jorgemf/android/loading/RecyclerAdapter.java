@@ -18,32 +18,24 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 		.Adapter<RecyclerView.ViewHolder> {
 
 	private static final int TYPE_TOP_LOADING = -2;
-
 	private static final int TYPE_TOP_ERROR = -3;
-
 	private static final int TYPE_BOTTOM_LOADING = -4;
-
 	private static final int TYPE_BOTTOM_ERROR = -5;
 
-	private boolean mShowTopLoading;
-
-	private boolean mShowBottomLoading;
-
-	private boolean mShowTopError;
-
-	private boolean mShowBottomError;
-
 	private final Context mContext;
+	private final RecyclerView.Adapter mAdapter;
+	private final LoadingHelper.ErrorViewsCreator mErrorViewsCreator;
+
+	private boolean mShowTopLoading;
+	private boolean mShowBottomLoading;
+	private boolean mShowTopError;
+	private boolean mShowBottomError;
 
 	private LoadingHelper mLoadingHelper;
 
-	private final RecyclerView.Adapter mAdapter;
-
-	private final LoadingHelper.ErrorViewsCreator mErrorViewsCreator;
-
 	/**
-	 * Default constructor, it requires the adapter which will wrap and the loading fragment in
-	 * order to bind the top loading view.
+	 * Default constructor, it requires the adapter which will wrap and the loading fragment in order to bind the top
+	 * loading view.
 	 *
 	 * @param loadingHelper     Loading helper used to bind the top loading view
 	 * @param adapter           Adapter with the data
@@ -141,8 +133,8 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	}
 
 	/**
-	 * @return The number of items of the adapter with the data. It does not include the headar and
-	 * footer views for loading items.
+	 * @return The number of items of the adapter with the data. It does not include the headar and footer views for
+	 * loading items.
 	 */
 	public int getAdapterItemCount() {
 		return mAdapter.getItemCount();

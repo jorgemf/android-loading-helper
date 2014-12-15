@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.jorgemf.android.loading.test"
@@ -14,5 +14,5 @@ android {
 dependencies {
     compile project(':library')
     compile "com.android.support:recyclerview-v7:21.0.0"
-    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:support-v4:21.0.2'
 }

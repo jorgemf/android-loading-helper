@@ -1,24 +1,31 @@
-/.gradle
+#/.gradle
+#/local.properties
+#/build
+#
+## Eclipse
+#.classpath
+#.project
+#.settings/
+#
+## Intellij
+#.idea
+#!.idea/codeStyleSettings.xml
+#!.idea/encodings.xml
+#!.idea/gradle.xml
+#!.idea/modules.xml
+#!.idea/vcs.xml
+#*.iws
+#
+## Mac
+#.DS_Store
+#
+## Maven
+#log/
+#target/
+
+.gradle
 /local.properties
-/build
-
-# Eclipse
-.classpath
-.project
-.settings/
-
-# Intellij
-.idea
-!.idea/codeStyleSettings.xml
-!.idea/encodings.xml
-!.idea/gradle.xml
-!.idea/modules.xml
-!.idea/vcs.xml
-*.iws
-
-# Mac
+/.idea/workspace.xml
+/.idea/libraries
 .DS_Store
-
-# Maven
-log/
-target/
+/build
