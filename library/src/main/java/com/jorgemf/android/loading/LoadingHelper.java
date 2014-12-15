@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
@@ -23,43 +24,72 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.OnTouchListener {
 
+	private static final int INVALID_POINTER = -1;
+
 	/**
 	 * Maximum value of the progress bar.
 	 */
 	protected static final int PROGRESS_BAR_MAX = 1000;
-	private static final int INVALID_POINTER = -1;
 
 	private final AtomicBoolean mIsLoadingNext;
+
 	private final AtomicBoolean mIsLoadingPrevious;
+
 	private final LoadListener mLoadListener;
+
 	private final RecyclerView mRecyclerView;
-	private final RecyclerAdapter mAdapter;
-	private final ContentLoadingProgressBar mContentLoadingProgressBar;
-	private final DecelerateInterpolator mDecelerateInterpolator;
 
 	private LinearLayoutManager mLayoutManager;
+
+	private final RecyclerAdapter mAdapter;
+
+	private final ContentLoadingProgressBar mContentLoadingProgressBar;
+
 	private boolean mEnableInitialProgressLoading;
+
 	private boolean mEnabledPullToRefresUpdate;
+
 	private boolean mEnableEndlessLoading;
+
 	private int mEndlessLoadingPreloadAhead;
+
 	private View mTopLoadingView;
+
 	private ProgressBar mTopLoadingProgressBar;
+
 	private float mPullToRefreshInitialY;
+
 	private int mPullToRefreshDistance;
+
 	private int mPullToRefreshAnimationDuration;
+
 	private int mLoadingViewOriginalHeight;
+
 	private ValueAnimator mPullToRefreshUpdateAnimation;
+
 	private int mActivePointerId;
+
+	private final DecelerateInterpolator mDecelerateInterpolator;
+
+	private View.OnTouchListener mTouchListener;
+
+	private GridSpanSize mGridSpanSize;
+
+	private RecyclerView.OnScrollListener mOnScrollListener;
 
 	/**
 	 * Default constructor
 	 *
 	 * @param activity          Activity
 	 * @param recyclerView      Recycler view
-	 * @param adapter           Adapter with the data. It will be set into the recycler view inside a wrapper adapter.
-	 * @param loadListener      Load listener which received the load actions and load the next items
+	 * @param adapter           Adapter with the data. It will be set into the recycler view inside
+	 *                          a wrapper adapter.
+	 * @param loadListener      Load listener which received the load actions and load the next
+	 *                          items
 	 * @param initialLoading    Initial loading progress bar
-	 * @param errorViewsCreator Errors view creator, it can be set to null an no error views will be displayed
+	 * @param errorViewsCreator Errors view creator, it can be set to null an no error views
+	 *                             will be
+	 *                          displayed
 	 */
 	public LoadingHelper(@NonNull Activity activity, @NonNull RecyclerView recyclerView,
 	                     @NonNull RecyclerView.Adapter<k> adapter,
@@ -116,11 +146,17 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+				if (mOnScrollListener != null) {
+					mOnScrollListener.onScrollStateChanged(recyclerView, newState);
+				}
 			}
 
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 				checkLoadNext();
+				if (mOnScrollListener != null) {
+					mOnScrollListener.onScrolled(recyclerView, dx, dy);
+				}
 			}
 		});
 		mRecyclerView.setOnTouchListener(this);
@@ -132,14 +168,26 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
-	 * Sets the layout manager of the recycler view.
+	 * Sets the layout manager of the recycler view. If the layout manager is a GridLayoutManager
+	 * the span size lookup is changed in order to make the pull to refresh use the whole width of
+	 * the view.
 	 *
 	 * @param layoutManager The new layout manager.
 	 * @see android.support.v7.widget.LinearLayoutManager
+	 * @see android.support.v7.widget.GridLayoutManager
+	 * @see android.support.v7.widget.GridLayoutManager#setSpanSizeLookup(
+	 *android.support.v7.widget.GridLayoutManager.SpanSizeLookup)
 	 */
 	public void setLayoutManager(@NonNull LinearLayoutManager layoutManager) {
 		mLayoutManager = layoutManager;
 		mRecyclerView.setLayoutManager(mLayoutManager);
+		if (layoutManager instanceof GridLayoutManager) {
+			GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+			if (mGridSpanSize == null) {
+				mGridSpanSize = new GridSpanSize(gridLayoutManager);
+			}
+			gridLayoutManager.setSpanSizeLookup(mGridSpanSize);
+		}
 	}
 
 	/**
@@ -151,8 +199,9 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
-	 * Whether the initial progress loading will be performed or not. Future calls after the initial loading wont do
-	 * anything unless you restart the fragment.
+	 * Whether the initial progress loading will be performed or not. Future calls after the
+	 * initial
+	 * loading wont do anything unless you restart the fragment.
 	 *
 	 * @param enable whether the initial progress loading is enabled or not
 	 * @see LoadListener#loadInitial()
@@ -183,7 +232,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 
 
 	/**
-	 * Sets the number of elements before reaching the end of the recycler view to call the loading method.
+	 * Sets the number of elements before reaching the end of the recycler view to call the loading
+	 * method.
 	 *
 	 * @param numberOfElements Number of elements
 	 * @see LoadListener#loadNext()
@@ -268,13 +318,13 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			mContentLoadingProgressBar.hide();
 		}
 		if (mIsLoadingNext.getAndSet(false)) {
-			mIsLoadingNext.set(false);
 			if (showTopErrorView) {
 				mAdapter.showTopError(true);
 				mAdapter.notifyItemInserted(0);
 			} else {
 				if (dataInserted > 0) {
-					mAdapter.notifyItemRangeInserted(0, dataInserted);
+					int itemCount = mAdapter.getItemCount();
+					mAdapter.notifyItemRangeInserted(itemCount - dataInserted, dataInserted);
 				}
 				if (keepLoading) {
 					checkLoadNext();
@@ -284,7 +334,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
-	 * When an error is displayed at the top this method tries again to load the previous items again.
+	 * When an error is displayed at the top this method tries again to load the previous items
+	 * again.
 	 */
 	public void retryLoadPrevious() {
 		if (mAdapter.isShowTopLoading() && mEnabledPullToRefresUpdate &&
@@ -295,7 +346,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 
 
 	/**
-	 * When an error is displayed at the bottom this method tries again to load the next items again.
+	 * When an error is displayed at the bottom this method tries again to load the next items
+	 * again.
 	 */
 	public void retryLoadNext() {
 		if (mAdapter.isShowBottomError() && mEnableEndlessLoading &&
@@ -312,7 +364,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
-	 * Resets the loading view. All the items are removed from the adapter with the method #clearAdapter
+	 * Resets the loading view. All the items are removed from the adapter with the method
+	 * #clearAdapter
 	 */
 	public synchronized void reset() {
 		if (mEnableInitialProgressLoading) {
@@ -401,7 +454,20 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 				}
 			}
 		}
+		if (mTouchListener != null) {
+			mTouchListener.onTouch(v, event);
+		}
 		return false;
+	}
+
+	/**
+	 * Sets a touch listener for handling gestures in the recycler view. The results of the touch
+	 * listener are not taking into account to return in the onTouch method.
+	 *
+	 * @param touchListener The touch listener to handle the gestures in the recycler view.
+	 */
+	public void setOnTouchListener(View.OnTouchListener touchListener) {
+		mTouchListener = touchListener;
 	}
 
 	private void initPullToRefresh() {
@@ -498,7 +564,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
-	 * Binds the top loading view. This is required in order to deal with the pull to refresh function.
+	 * Binds the top loading view. This is required in order to deal with the pull to refresh
+	 * function.
 	 *
 	 * @param itemView   the view with the progress bar
 	 * @param topLoading the top progress bar
@@ -516,7 +583,17 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	}
 
 	/**
-	 * Class to handle the creation of the error views. By default it does not create any error view.
+	 * Sets an onScrollListener on the recycler view.
+	 *
+	 * @param onScrollListener The scroll listener.
+	 */
+	public void setOnScrollListener(RecyclerView.OnScrollListener onScrollListener) {
+		mOnScrollListener = onScrollListener;
+	}
+
+	/**
+	 * Class to handle the creation of the error views. By default it does not create any error
+	 * view.
 	 */
 	public interface ErrorViewsCreator {
 
@@ -550,8 +627,9 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	public interface LoadListener {
 
 		/**
-		 * Method called to make the initial preload. After finish the initial preloading you must call the method
-		 * #finishPreloadInitial() If you do not want to use it call inside the method #finishPreloadInitial.
+		 * Method called to make the initial preload. After finish the initial preloading you must
+		 * call the method #finishPreloadInitial() If you do not want to use it call inside the
+		 * method #finishPreloadInitial.
 		 *
 		 * @see #finishPreloadInitial()
 		 */
@@ -565,8 +643,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		public void clearAdapter();
 
 		/**
-		 * Method called when the pull to refresh action has been performed.  After finish the loading you must call the
-		 * method #finishLoadingPrevious(boolean, int)
+		 * Method called when the pull to refresh action has been performed.  After finish the
+		 * loading you must call the method #finishLoadingPrevious(boolean, int)
 		 *
 		 * @see #finishLoadingPrevious(boolean, int)
 		 */
@@ -574,8 +652,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 
 
 		/**
-		 * Method called when the user is reaching the end of the elements and it needs to load more. After finish the
-		 * loading you must call the method #finishLoadingNext(boolean, int)
+		 * Method called when the user is reaching the end of the elements and it needs to load
+		 * more. After finish the loading you must call the method #finishLoadingNext(boolean, int)
 		 *
 		 * @see #finishLoadingNext(boolean, int, boolean)
 		 */
@@ -589,5 +667,52 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		 * @see #finishLoadingInitial(boolean, int, boolean)
 		 */
 		public void loadInitial();
+	}
+
+	/**
+	 * A replacement for SpanSizeLookup for the GridLayoutManager of the RecyclervView.
+	 *
+	 * @see android.support.v7.widget.GridLayoutManager.SpanSizeLookup
+	 */
+	public class GridSpanSize extends GridLayoutManager.SpanSizeLookup {
+
+		private GridLayoutManager.SpanSizeLookup mSpanSizeLookUpWrapped;
+
+		private int mSpanCount;
+
+		public GridSpanSize(GridLayoutManager gridLayoutManager) {
+			mSpanSizeLookUpWrapped = gridLayoutManager.getSpanSizeLookup();
+			mSpanCount = gridLayoutManager.getSpanCount();
+		}
+
+		@Override
+		public int getSpanSize(int position) {
+			if (mAdapter.isShowTopLoading()) {
+				position -= 1;
+			}
+			if (mAdapter.isShowTopError()) {
+				position -= 1;
+			}
+			if (position < 0) {
+				return mSpanCount;
+			} else {
+				return mSpanSizeLookUpWrapped.getSpanSize(position);
+			}
+		}
+
+		@Override
+		public int getSpanIndex(int position, int spanCount) {
+			if (mAdapter.isShowTopLoading()) {
+				position -= 1;
+			}
+			if (mAdapter.isShowTopError()) {
+				position -= 1;
+			}
+			if (position < 0) {
+				return spanCount - 1;
+			} else {
+				return mSpanSizeLookUpWrapped.getSpanIndex(position, spanCount);
+			}
+		}
 	}
 }
