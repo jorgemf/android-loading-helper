@@ -8,15 +8,15 @@ There is a sample application under apptest.
 
 In order to use them add the project to your build.gradle
 
-'''gradle
+```Gradle
 dependencies {
     compile 'com.livae:android-loadingHelper-v1.0'
 }
-'''
+```
 
 And then in your fragment:
 
-'''java
+```Java
 public class MyFragment extends Fragment implements LoadingHelper.LoadListener {
 
 	private MyAdapter mAdapter;
@@ -106,4 +106,4 @@ public class MyFragment extends Fragment implements LoadingHelper.LoadListener {
 		mAdapter.clear();
 	}
 }
-'''
+```
