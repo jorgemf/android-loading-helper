@@ -76,29 +76,25 @@ public class MyFragment extends Fragment implements LoadingHelper.LoadListener {
 	@Override
 	public void loadPrevious() {
 	    // load the previous data in the background (pull to refresh)
-	    // when finished call:
-		// mLoadingHelper.finishLoadingPrevious(boolean error, integer elements added);
+	    // when finished call: mLoadingHelper.finishLoadingPrevious();
 	}
 
 	@Override
 	public void loadNext() {
 	    // load next data in the background (endless loading)
-	    // when finished call:
-		// mLoadingHelper.finishLoadingNext(boolean error, integer elements added, boolean keep adding more);
+	    // when finished call: mLoadingHelper.finishLoadingNext();
 	}
 
 	@Override
 	public void loadInitial() {
 	    // load initial data in the background, make the first network request
-	    // when finished call:
-		// mLoadingHelper.finishLoadInitial(boolean error, integer elements added, boolean keep adding more);
+	    // when finished call: mLoadingHelper.finishLoadInitial();
 	}
 
 	@Override
 	public void preloadInitial() {
 	    // load data from your cache before making any network request
-	    // when finished call:
-		// mLoadingHelper.finishPreloadInitial();
+	    // when finished call: mLoadingHelper.finishPreloadInitial();
 	}
 
 	@Override
@@ -107,3 +103,20 @@ public class MyFragment extends Fragment implements LoadingHelper.LoadListener {
 	}
 }
 ```
+
+## License
+
+    Copyright 2014, 2015 Jorge Muñoz Fuentes
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+   
