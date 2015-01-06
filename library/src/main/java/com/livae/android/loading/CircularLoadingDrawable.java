@@ -1,4 +1,4 @@
-package com.jorgemf.android.loading;
+package com.livae.android.loading;
 
 import android.content.Context;
 import android.content.res.Resources;

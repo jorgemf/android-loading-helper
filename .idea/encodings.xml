@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+    <file url="file://$PROJECT_DIR$/apptest/src/main/java/com/livae/android/loading/test/ConcreteFragment.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apptest/src/main/java/com/livae/android/loading/test/MainActivity.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apptest/src/main/res/layout" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apptest/src/main/res/layout/activity_main.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apptest/src/main/res/layout/fragment_loading.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apptest/src/main/res/values" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/library" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/librarytest/src/main/java/com/jorgemf/android/loading/test/ConcreteFragment.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/librarytest/src/main/java/com/jorgemf/android/loading/test/MainActivity.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/librarytest/src/main/res/layout" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/librarytest/src/main/res/layout/activity_main.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/librarytest/src/main/res/layout/fragment_loading.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/librarytest/src/main/res/values" charset="UTF-8" />
   </component>
 </project>
-

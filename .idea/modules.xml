@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LoadingHelper.iml" filepath="$PROJECT_DIR$/LoadingHelper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/apptest/apptest.iml" filepath="$PROJECT_DIR$/apptest/apptest.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/librarytest/librarytest.iml" filepath="$PROJECT_DIR$/librarytest/librarytest.iml" />
     </modules>
   </component>
 </project>

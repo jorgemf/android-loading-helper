@@ -1,9 +1,7 @@
-package com.jorgemf.android.loading.test;
+package com.livae.android.loading.test;
 
 import android.app.Activity;
 import android.os.Bundle;
-
-import com.jorgemf.android.loading.test.R;
 
 
 public class MainActivity extends Activity {

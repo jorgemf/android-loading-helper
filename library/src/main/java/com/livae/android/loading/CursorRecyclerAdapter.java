@@ -1,4 +1,4 @@
-package com.jorgemf.android.loading;
+package com.livae.android.loading;
 
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;

@@ -1,4 +1,4 @@
-package com.jorgemf.android.loading;
+package com.livae.android.loading;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -219,7 +219,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	/**
 	 * This method must be called after preloading the initial items.
 	 *
-	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#preloadInitial()
+	 * @see com.livae.android.loading.LoadingHelper.LoadListener#preloadInitial()
 	 */
 	public synchronized void finishPreloadInitial() {
 		mIsLoadingNext.set(true);
@@ -231,7 +231,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 *
 	 * @param showTopErrorView whether to show or not the top error view
 	 * @param dataInserted     Number of elements inserted before the first element
-	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#loadPrevious()
+	 * @see com.livae.android.loading.LoadingHelper.LoadListener#loadPrevious()
 	 */
 	public synchronized void finishLoadingPrevious(boolean showTopErrorView,
 	                                               int dataInserted) {
@@ -253,7 +253,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 * @param showBottomErrorView whether to show or not the bottom error view
 	 * @param dataInserted        Number of elements inserted after the last element
 	 * @param keepLoading         whether to try to load the next elements or not
-	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#loadNext()
+	 * @see com.livae.android.loading.LoadingHelper.LoadListener#loadNext()
 	 */
 	public synchronized void finishLoadingNext(boolean showBottomErrorView,
 	                                           int dataInserted, boolean keepLoading) {
@@ -281,7 +281,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 	 * @param showTopErrorView whether to show or not the top error view
 	 * @param dataInserted     Number of elements inserted
 	 * @param keepLoading      whether to try to load the next elements or not
-	 * @see com.jorgemf.android.loading.LoadingHelper.LoadListener#loadInitial()
+	 * @see com.livae.android.loading.LoadingHelper.LoadListener#loadInitial()
 	 */
 	public synchronized void finishLoadingInitial(boolean showTopErrorView, int dataInserted,
 	                                              boolean keepLoading) {

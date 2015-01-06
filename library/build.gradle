@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.jorgemf.android.loading"
+        applicationId "com.livae.android.loading"
         minSdkVersion 15
         targetSdkVersion 21
     }

@@ -1,4 +1,4 @@
-package com.jorgemf.android.loading.test;
+package com.livae.android.loading.test;
 
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -9,8 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.jorgemf.android.loading.LoadingHelper;
+import com.livae.android.loading.LoadingHelper;
 
 public class ConcreteFragment extends Fragment implements LoadingHelper.LoadListener {
 
