@@ -22,15 +22,9 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/build/intermediates/classes/release" />
+    <output url="file:///tmp/jorge/gradlebuilds/intermediates/classes/release" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/release" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/release" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/release" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/release" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/release" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/generated/release" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/assets" type="java-resource" />
@@ -52,27 +46,40 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/coverage-instrumented-classes" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dex" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dex-cache" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jacoco" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaResources" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/libs" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/ndk" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/pre-dexed" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/proguard" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
-      <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
-      <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
+    </content>
+    <content url="file:///tmp/jorge/gradlebuilds">
+      <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/source/r/release" isTestSource="false" generated="true" />
+      <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/source/aidl/release" isTestSource="false" generated="true" />
+      <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/source/buildConfig/release" isTestSource="false" generated="true" />
+      <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/source/rs/release" isTestSource="false" generated="true" />
+      <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/res/rs/release" type="java-resource" />
+      <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/res/generated/release" type="java-resource" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/classes" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/client-libs" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/dependency-cache" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/generated-source" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/assets" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/bundles" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/classes" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/coverage-instrumented-classes" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/dependency-cache" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/dex" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/dex-cache" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/incremental" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/jacoco" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/javaResources" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/libs" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/lint" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/manifests" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/ndk" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/pre-dexed" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/proguard" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/res" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/rs" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/symbols" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/libs" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/outputs" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -81,3 +88,4 @@
     <orderEntry type="library" exported="" name="recyclerview-v7-21.0.0" level="project" />
   </component>
 </module>
+
