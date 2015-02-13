@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="loading_helper_loading_progress_bar_margin">8dp</dimen>
-	<dimen name="loading_helper_pull_refresh_distance">150dp</dimen>
+    <dimen name="loading_helper_loading_progress_bar_margin">8dp</dimen>
+    <dimen name="loading_helper_pull_refresh_distance">150dp</dimen>
 </resources>

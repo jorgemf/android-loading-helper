@@ -3,6 +3,7 @@ package com.livae.android.loading;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
@@ -55,6 +56,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
     private View.OnTouchListener mTouchListener;
     private GridSpanSize mGridSpanSize;
     private RecyclerView.OnScrollListener mOnScrollListener;
+    private int mColorCircularLoading = Color.GRAY;
+    private int mColorCircularLoadingActive = Color.GRAY;
 
     /**
      * Default constructor
@@ -436,6 +439,33 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
      */
     public void setOnTouchListener(View.OnTouchListener touchListener) {
         mTouchListener = touchListener;
+    }
+
+    /**
+     * Sets the pull to refresh distance, by default is 150dp. Here is set in pixles.
+     *
+     * @param px pull to refresh distance in pixles.
+     */
+    public void setPullToRefreshDistance(int px) {
+        if (px > 0) {
+            mPullToRefreshDistance = px;
+        }
+    }
+
+    public int getColorCircularLoading() {
+        return mColorCircularLoading;
+    }
+
+    public void setColorCircularLoading(int mColorCircularLoading) {
+        this.mColorCircularLoading = mColorCircularLoading;
+    }
+
+    public int getColorCircularLoadingActive() {
+        return mColorCircularLoadingActive;
+    }
+
+    public void setColorCircularLoadingActive(int mColorCircularLoadingActive) {
+        this.mColorCircularLoadingActive = mColorCircularLoadingActive;
     }
 
     private void initPullToRefresh() {

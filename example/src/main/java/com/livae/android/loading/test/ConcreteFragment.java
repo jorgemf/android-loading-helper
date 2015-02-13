@@ -1,6 +1,7 @@
 package com.livae.android.loading.test;
 
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.ContentLoadingProgressBar;
@@ -63,6 +64,8 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
         mLoadingHelper.enableInitialProgressLoading(true);
         mLoadingHelper.enableEndlessLoading(true);
         mLoadingHelper.enablePullToRefreshUpdate(true);
+        mLoadingHelper.setColorCircularLoading(Color.DKGRAY);
+        mLoadingHelper.setColorCircularLoadingActive(Color.BLUE);
         mLoadingHelper.start();
     }
 
