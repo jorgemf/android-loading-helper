@@ -32,7 +32,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
         ContentLoadingProgressBar contentLoadingProgressBar = (ContentLoadingProgressBar) view
                 .findViewById(R.id.center_progressbar);
         mFakeAdapter = new FakeAdapter();
-        mLoadingHelper = new LoadingHelper<FakeViewHolder>(
+        mLoadingHelper = new LoadingHelper<>(
                 getActivity(), recyclerView, mFakeAdapter, this, contentLoadingProgressBar,
                 new LoadingHelper.ErrorViewsCreator() {
 
@@ -40,6 +40,13 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
                     public View createTopErrorView(ViewGroup root) {
                         TextView textView = new TextView(root.getContext());
                         textView.setText("top error loading, try again");
+                        textView.setPadding(100, 100, 100, 100);
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mLoadingHelper.retryLoadPrevious();
+                            }
+                        });
                         return textView;
 
                     }
@@ -48,6 +55,13 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
                     public View createBottomErrorView(ViewGroup root) {
                         TextView textView = new TextView(root.getContext());
                         textView.setText("bottom error loading, waiting for trying later");
+                        textView.setPadding(100, 100, 100, 100);
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mLoadingHelper.retryLoadNext();
+                            }
+                        });
                         return textView;
                     }
 
@@ -65,7 +79,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
         mLoadingHelper.enableEndlessLoading(true);
         mLoadingHelper.enablePullToRefreshUpdate(true);
         mLoadingHelper.setColorCircularLoading(Color.DKGRAY);
-        mLoadingHelper.setColorCircularLoadingActive(Color.BLUE);
+        mLoadingHelper.setColorCircularLoadingActive(Color.GREEN);
         mLoadingHelper.start();
     }
 
@@ -81,7 +95,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -91,11 +105,11 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                if (Math.random() < 0.5) {
+                if (Math.random() < 0.9) {
                     mLoadingHelper.finishLoadingPrevious(true, 0);
                 } else {
-                    mFakeAdapter.preadd(3);
-                    mLoadingHelper.finishLoadingPrevious(false, 3);
+                    mFakeAdapter.preadd(2);
+                    mLoadingHelper.finishLoadingPrevious(false, 2);
                 }
                 mLoadingHelper.enableEndlessLoading(true);
             }
@@ -109,7 +123,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -119,12 +133,11 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                if (Math.random() < 0.1) {
-                    mLoadingHelper.enableEndlessLoading(false);
+                if (Math.random() < 0.5) {
                     mLoadingHelper.finishLoadingNext(true, 0, true);
                 } else {
-                    mFakeAdapter.add(4);
-                    mLoadingHelper.finishLoadingNext(false, 4, true);
+                    mFakeAdapter.add(3);
+                    mLoadingHelper.finishLoadingNext(false, 3, true);
                 }
             }
         };
@@ -171,7 +184,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
         public FakeViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView;
-            textView.setPadding(120, 40, 120, 40);
+            textView.setPadding(100, 30, 100, 30);
         }
     }
 

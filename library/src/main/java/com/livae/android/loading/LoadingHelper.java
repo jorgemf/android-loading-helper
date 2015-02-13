@@ -44,6 +44,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
     private boolean mEnableInitialProgressLoading;
     private boolean mEnabledPullToRefresUpdate;
     private boolean mEnableEndlessLoading;
+    private boolean mRetryLoadingPrevious;
     private int mEndlessLoadingPreloadAhead;
     private View mTopLoadingView;
     private ProgressBar mTopLoadingProgressBar;
@@ -56,8 +57,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
     private View.OnTouchListener mTouchListener;
     private GridSpanSize mGridSpanSize;
     private RecyclerView.OnScrollListener mOnScrollListener;
-    private int mColorCircularLoading = Color.GRAY;
-    private int mColorCircularLoadingActive = Color.GRAY;
+    private int mColorCircularLoading;
+    private int mColorCircularLoadingActive;
 
     /**
      * Default constructor
@@ -80,6 +81,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
         mEnableInitialProgressLoading = false;
         mEnabledPullToRefresUpdate = false;
         mEnableEndlessLoading = false;
+        mColorCircularLoading = Color.GRAY;
+        mColorCircularLoadingActive = Color.GRAY;
         mEndlessLoadingPreloadAhead = 0;
         mDecelerateInterpolator = new DecelerateInterpolator(2f);
         mActivePointerId = INVALID_POINTER;
@@ -311,9 +314,33 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
      * When an error is displayed at the top this method tries again to load the previous items again.
      */
     public void retryLoadPrevious() {
-        if (mAdapter.isShowTopError() && mEnabledPullToRefresUpdate &&
-                !mIsLoadingPrevious.get()) {
-            initPullToRefresh();
+        if (mAdapter.isShowTopError() && mEnabledPullToRefresUpdate && !mIsLoadingPrevious.get()) {
+            if (mAdapter.isShowTopError()) {
+                mAdapter.showTopError(false);
+                mAdapter.notifyItemRemoved(0);
+            }
+            if (mTopLoadingView != null) {
+                ViewGroup.LayoutParams layoutParams = mTopLoadingView.getLayoutParams();
+                layoutParams.height = mLoadingViewOriginalHeight;
+                mTopLoadingView.setLayoutParams(layoutParams);
+                mTopLoadingProgressBar.setIndeterminate(true);
+                mTopLoadingView.setAlpha(1);
+                mTopLoadingProgressBar.setScaleX(1);
+                mTopLoadingProgressBar.setScaleY(1);
+            }
+            if (!mAdapter.isShowTopLoading()) {
+                mRetryLoadingPrevious = true;
+                mAdapter.showTopLoading(true);
+                mAdapter.notifyItemInserted(0);
+            }
+            mRecyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mRetryLoadingPrevious = false;
+                }
+            });
+            mIsLoadingPrevious.set(true);
+            mLoadListener.loadPrevious();
         }
     }
 
@@ -322,9 +349,17 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
      * When an error is displayed at the bottom this method tries again to load the next items again.
      */
     public void retryLoadNext() {
-        if (mAdapter.isShowBottomError() && mEnableEndlessLoading &&
-                !mIsLoadingNext.get()) {
-            checkLoadNext();
+        if (mAdapter.isShowBottomError() && mEnableEndlessLoading && !mIsLoadingNext.get()) {
+            if (mAdapter.isShowBottomError()) {
+                mAdapter.showBottomError(false);
+                mAdapter.notifyItemRemoved(mAdapter.getItemCount() - 1);
+            }
+            if (!mAdapter.isShowBottomLoading()) {
+                mAdapter.showBottomLoading(true);
+                mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
+            }
+            mIsLoadingNext.set(true);
+            mLoadListener.loadNext();
         }
     }
 
@@ -499,9 +534,11 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
             ratioDisplacement = 1;
         }
         int variation = mTopLoadingView.getLayoutParams().height - (int) displacement;
-        mTopLoadingView.getLayoutParams().height = (int) displacement;
+
+        ViewGroup.LayoutParams layoutParams = mTopLoadingView.getLayoutParams();
+        layoutParams.height = (int) displacement;
+        mTopLoadingView.setLayoutParams(layoutParams);
         mRecyclerView.scrollBy(variation, 0);
-        mTopLoadingView.requestLayout();
         mTopLoadingProgressBar.setProgress((int) (PROGRESS_BAR_MAX * ratioPull));
         mTopLoadingView.setAlpha(ratioDisplacement);
         mTopLoadingProgressBar.setScaleX(ratioPull);
@@ -536,21 +573,23 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
             mPullToRefreshUpdateAnimation.cancel();
         }
         int height = mTopLoadingView.getHeight();
-        mPullToRefreshUpdateAnimation = ValueAnimator.ofInt(height, mLoadingViewOriginalHeight);
-        mPullToRefreshUpdateAnimation.setDuration(mPullToRefreshAnimationDuration);
-        mPullToRefreshUpdateAnimation.setInterpolator(mDecelerateInterpolator);
-        mPullToRefreshUpdateAnimation.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        int val = (Integer) valueAnimator.getAnimatedValue();
-                        ViewGroup.LayoutParams layoutParams = mTopLoadingView.getLayoutParams();
-                        layoutParams.height = val;
-                        mTopLoadingView.setLayoutParams(layoutParams);
-                    }
-                });
-        mPullToRefreshUpdateAnimation.setDuration(mPullToRefreshAnimationDuration);
-        mPullToRefreshUpdateAnimation.start();
+        if (height != mLoadingViewOriginalHeight) {
+            mPullToRefreshUpdateAnimation = ValueAnimator.ofInt(height, mLoadingViewOriginalHeight);
+            mPullToRefreshUpdateAnimation.setDuration(mPullToRefreshAnimationDuration);
+            mPullToRefreshUpdateAnimation.setInterpolator(mDecelerateInterpolator);
+            mPullToRefreshUpdateAnimation.addUpdateListener(
+                    new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            int val = (Integer) valueAnimator.getAnimatedValue();
+                            ViewGroup.LayoutParams layoutParams = mTopLoadingView.getLayoutParams();
+                            layoutParams.height = val;
+                            mTopLoadingView.setLayoutParams(layoutParams);
+                        }
+                    });
+            mPullToRefreshUpdateAnimation.setDuration(mPullToRefreshAnimationDuration);
+            mPullToRefreshUpdateAnimation.start();
+        }
         mLoadListener.loadPrevious();
     }
 
@@ -573,10 +612,12 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 //		mTopCircularLoadingDrawable = (CircularLoadingDrawable)topLoading.getProgressDrawable();
         mTopLoadingView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         mLoadingViewOriginalHeight = mTopLoadingView.getMeasuredHeight();
-        mTopLoadingView.getLayoutParams().height = 1;
-        mTopLoadingProgressBar.setIndeterminate(false);
-        mTopLoadingView.requestLayout();
-        mRecyclerView.scrollBy(-1, 0);
+        if (!mRetryLoadingPrevious) {
+            mTopLoadingView.getLayoutParams().height = 1;
+            mTopLoadingProgressBar.setIndeterminate(false);
+            mTopLoadingView.requestLayout();
+            mRecyclerView.scrollBy(-1, 0);
+        }
     }
 
     /**

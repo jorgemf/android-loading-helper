@@ -10,7 +10,7 @@ android {
     }
 
     buildTypes {
-        defaultConfig {
+        release {
             consumerProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

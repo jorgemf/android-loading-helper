@@ -10,7 +10,7 @@ In order to use them add the project to your build.gradle
 
 ```Gradle
 dependencies {
-    compile 'com.livae:android-loadingHelper:1.0'
+    compile 'com.livae:android-loadingHelper:1.1'
 }
 ```
 
@@ -64,6 +64,8 @@ public class MyFragment extends Fragment implements LoadingHelper.LoadListener {
 		mLoadingHelper.enableInitialProgressLoading(true);
 		mLoadingHelper.enableEndlessLoading(true);
 		mLoadingHelper.enablePullToRefreshUpdate(true);
+        mLoadingHelper.setColorCircularLoading(Color.DKGRAY);
+        mLoadingHelper.setColorCircularLoadingActive(Color.GREEN);
 		mLoadingHelper.start();
 	}
 
