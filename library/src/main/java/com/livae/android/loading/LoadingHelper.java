@@ -37,7 +37,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
     private final LoadListener mLoadListener;
     private final RecyclerView mRecyclerView;
     private final RecyclerAdapter mAdapter;
-    private final ContentLoadingProgressBar mContentLoadingProgressBar;
+    private final View mInitialLoadingView;
     private final DecelerateInterpolator mDecelerateInterpolator;
 
     private LinearLayoutManager mLayoutManager;
@@ -67,17 +67,17 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
      * @param recyclerView      Recycler view
      * @param adapter           Adapter with the data. It will be set into the recycler view inside a wrapper adapter.
      * @param loadListener      Load listener which received the load actions and load the next items
-     * @param initialLoading    Initial loading progress bar
+     * @param initialLoading    Initial loading view. We recommend to use a ContentLoadingProgressBar
      * @param errorViewsCreator Errors view creator, it can be set to null an no error views will be displayed
      */
     public LoadingHelper(@NonNull Activity activity, @NonNull RecyclerView recyclerView,
                          @NonNull RecyclerView.Adapter<k> adapter,
                          @NonNull LoadListener loadListener,
-                         ContentLoadingProgressBar initialLoading,
+                         View initialLoading,
                          ErrorViewsCreator errorViewsCreator) {
         mRecyclerView = recyclerView;
         mLoadListener = loadListener;
-        mContentLoadingProgressBar = initialLoading;
+        mInitialLoadingView = initialLoading;
         mEnableInitialProgressLoading = false;
         mEnabledPullToRefresUpdate = false;
         mEnableEndlessLoading = false;
@@ -117,12 +117,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
             };
         }
         // specify the adapter
-        mAdapter = new RecyclerAdapter<k>(this, adapter, errorViewsCreator, activity);
+        mAdapter = new RecyclerAdapter<>(this, adapter, errorViewsCreator, activity);
         mRecyclerView.setAdapter(mAdapter);
-
-        if (mContentLoadingProgressBar != null) {
-            mContentLoadingProgressBar.setVisibility(View.GONE);
-        }
 
         mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -291,8 +287,12 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
      */
     public synchronized void finishLoadingInitial(boolean showTopErrorView, int dataInserted,
                                                   boolean keepLoading) {
-        if (mEnableInitialProgressLoading) {
-            mContentLoadingProgressBar.hide();
+        if (mEnableInitialProgressLoading && mInitialLoadingView != null) {
+            if (mInitialLoadingView instanceof ContentLoadingProgressBar) {
+                ((ContentLoadingProgressBar) mInitialLoadingView).hide();
+            } else {
+                mInitialLoadingView.setVisibility(View.GONE);
+            }
         }
         if (mIsLoadingNext.getAndSet(false)) {
             if (showTopErrorView) {
@@ -375,7 +375,11 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
      */
     public synchronized void reset() {
         if (mEnableInitialProgressLoading) {
-            mContentLoadingProgressBar.show();
+            if (mInitialLoadingView instanceof ContentLoadingProgressBar) {
+                ((ContentLoadingProgressBar) mInitialLoadingView).show();
+            } else {
+                mInitialLoadingView.setVisibility(View.VISIBLE);
+            }
         }
         int itemCount;
         if ((itemCount = mAdapter.getItemCount()) > 0) {
@@ -419,8 +423,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (mEnabledPullToRefresUpdate && !mIsLoadingPrevious.get()) {
-            if (mAdapter.getAdapterItemCount() > 0
-                    && mLayoutManager.findFirstVisibleItemPosition() == 0
+            if (mLayoutManager.findFirstVisibleItemPosition() == 0
                     && mLayoutManager.findViewByPosition(0).getTop() == 0) {
 
                 int pointer = MotionEventCompat.getPointerId(event, 0);
@@ -564,6 +567,10 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
         mPullToRefreshUpdateAnimation.start();
         mAdapter.showTopLoading(false);
         mAdapter.notifyItemRemoved(0);
+        if (mAdapter.getAdapterItemCount() == 0) {
+            mAdapter.showTopError(true);
+            mAdapter.notifyItemInserted(0);
+        }
     }
 
     private void startPullToRefresh() {

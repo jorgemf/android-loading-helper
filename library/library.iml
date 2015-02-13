@@ -62,6 +62,10 @@
       <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/source/rs/test/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/res/rs/test/debug" type="java-test-resource" />
       <sourceFolder url="file:///tmp/jorge/gradlebuilds/generated/res/generated/test/debug" type="java-test-resource" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/classes" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/client-libs" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/dependency-cache" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/generated-source" />
       <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/assets" />
       <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/bundles" />
       <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/classes" />
@@ -81,6 +85,7 @@
       <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/res" />
       <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/rs" />
       <excludeFolder url="file:///tmp/jorge/gradlebuilds/intermediates/symbols" />
+      <excludeFolder url="file:///tmp/jorge/gradlebuilds/libs" />
       <excludeFolder url="file:///tmp/jorge/gradlebuilds/outputs" />
       <excludeFolder url="file:///tmp/jorge/gradlebuilds/tmp" />
     </content>

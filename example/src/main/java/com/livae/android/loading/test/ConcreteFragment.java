@@ -105,7 +105,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                if (Math.random() < 0.9) {
+                if (Math.random() < 0.5) {
                     mLoadingHelper.finishLoadingPrevious(true, 0);
                 } else {
                     mFakeAdapter.preadd(2);
@@ -160,8 +160,12 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                mFakeAdapter.add(27);
-                mLoadingHelper.finishLoadingInitial(false, 27, true);
+                if (Math.random() < 0.5) {
+                    mLoadingHelper.finishLoadingInitial(true, 0, true);
+                } else {
+                    mFakeAdapter.add(27);
+                    mLoadingHelper.finishLoadingInitial(false, 27, true);
+                }
             }
         };
         asyncTask.execute();
