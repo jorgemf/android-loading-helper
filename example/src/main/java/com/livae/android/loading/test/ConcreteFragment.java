@@ -98,7 +98,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -108,7 +108,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                if (Math.random() < 0.5) {
+                if (Math.random() < 0.4) {
                     mLoadingHelper.finishLoadingPrevious(true, 0);
                 } else {
                     mFakeAdapter.preadd(2);
@@ -136,11 +136,11 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                if (Math.random() < 0.5) {
+                if (Math.random() < 0.4) {
                     mLoadingHelper.finishLoadingNext(true, 0, true);
                 } else {
-                    mFakeAdapter.add(3);
-                    mLoadingHelper.finishLoadingNext(false, 3, true);
+                    mFakeAdapter.add(2);
+                    mLoadingHelper.finishLoadingNext(false, 2, true);
                 }
             }
         };
@@ -163,11 +163,11 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                if (Math.random() < 0.5) {
+                if (Math.random() < 0.4) {
                     mLoadingHelper.finishLoadingInitial(true, 0, true);
                 } else {
-                    mFakeAdapter.add(27);
-                    mLoadingHelper.finishLoadingInitial(false, 27, true);
+                    mFakeAdapter.add(14);
+                    mLoadingHelper.finishLoadingInitial(false, 14, true);
                 }
             }
         };

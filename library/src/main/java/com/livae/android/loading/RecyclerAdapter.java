@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 /**
@@ -58,6 +59,15 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
         mShowBottomLoading = false;
         mShowTopError = false;
         mShowBottomError = false;
+        RecyclerView.LayoutParams layoutParams;
+        mHeaderView = new FrameLayout(context);
+        layoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        mHeaderView.setLayoutParams(layoutParams);
+        mFooterView = new FrameLayout(context);
+        layoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        mFooterView.setLayoutParams(layoutParams);
     }
 
     @Override
@@ -163,7 +173,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
     }
 
     private int getHeaderPosition() {
-        int pos = 0;
+        int pos = -1;
         if (mHeaderView != null) {
             pos += 1;
         }
@@ -260,11 +270,12 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
      */
     public void showTopLoading(boolean show) {
         if (mShowTopLoading != show) {
-            mShowTopLoading = show;
             if (show) {
+                mShowTopLoading = true;
                 notifyItemInserted(getTopLoadingPosition());
             } else {
                 notifyItemRemoved(getTopLoadingPosition());
+                mShowTopLoading = false;
             }
         }
     }
@@ -276,11 +287,12 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
      */
     public void showTopError(boolean show) {
         if (mShowTopError != show && mErrorViewsCreator.hasTopErrorView()) {
-            mShowTopError = show;
             if (show) {
+                mShowTopError = true;
                 notifyItemInserted(getTopErrorPosition());
             } else {
                 notifyItemRemoved(getTopErrorPosition());
+                mShowTopError = false;
             }
         }
     }
@@ -292,11 +304,12 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
      */
     public void showBottomLoading(boolean show) {
         if (mShowBottomLoading != show) {
-            mShowBottomLoading = show;
             if (show) {
+                mShowBottomLoading = true;
                 notifyItemInserted(getBottomLoadingPosition());
             } else {
                 notifyItemRemoved(getBottomLoadingPosition());
+                mShowBottomLoading = false;
             }
         }
     }
@@ -308,11 +321,12 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
      */
     public void showBottomError(boolean show) {
         if (mShowBottomError != show && mErrorViewsCreator.hasBottomErrorView()) {
-            mShowBottomError = show;
             if (show) {
+                mShowBottomError = true;
                 notifyItemInserted(getBottomErrorPosition());
             } else {
                 notifyItemRemoved(getBottomErrorPosition());
+                mShowBottomError = false;
             }
         }
     }
@@ -328,11 +342,12 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
                 mHeaderView = headerView;
                 notifyItemInserted(getHeaderPosition());
             } else {
-                mHeaderView = headerView;
                 if (headerView != null) {
+                    mHeaderView = headerView;
                     notifyItemChanged(getHeaderPosition());
                 } else {
                     notifyItemRemoved(getHeaderPosition());
+                    mHeaderView = null;
                 }
             }
         }
@@ -349,11 +364,12 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
                 mFooterView = footerView;
                 notifyItemInserted(getFooterPosition());
             } else {
-                mFooterView = footerView;
                 if (footerView != null) {
+                    mFooterView = footerView;
                     notifyItemChanged(getFooterPosition());
                 } else {
                     notifyItemRemoved(getFooterPosition());
+                    mFooterView = null;
                 }
             }
         }

@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet type="java-gradle" name="Java-Gradle">
       <configuration>
-        <option name="BUILD_FOLDER_PATH" value="/tmp/jorge/gradlebuilds" />
+        <option name="BUILD_FOLDER_PATH" value="/tmp/gradlebuild/android-loading-helper/android-loading-helper" />
       </configuration>
     </facet>
   </component>

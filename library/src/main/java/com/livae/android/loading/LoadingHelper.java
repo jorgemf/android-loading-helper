@@ -260,11 +260,11 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
                                                int dataInserted, boolean keepLoading) {
         if (mIsLoadingNext.getAndSet(false)) {
             mAdapter.showBottomLoading(false);
-            int itemCount = mAdapter.getAdapterItemCount();
             if (showBottomErrorView) {
                 mAdapter.showBottomError(true);
             } else {
                 if (dataInserted > 0) {
+                    int itemCount = mAdapter.getAdapterItemCount();
                     mAdapter.notifyDataItemRangeInserted(itemCount - dataInserted, dataInserted);
                 }
                 if (keepLoading) {
@@ -310,6 +310,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
      * When an error is displayed at the top this method tries again to load the previous items again.
      */
     public void retryLoadPrevious() {
+        System.out.println("LoadingHelper.retryLoadPrevious");
         if (mAdapter.isShowTopError() && mEnabledPullToRefresUpdate && !mIsLoadingPrevious.get()) {
             if (mAdapter.isShowTopError()) {
                 mAdapter.showTopError(false);
@@ -497,6 +498,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
     }
 
     private void initPullToRefresh() {
+        System.out.println("LoadingHelper.initPullToRefresh");
         if (mAdapter.isShowTopError()) {
             mAdapter.showTopError(false);
         }
