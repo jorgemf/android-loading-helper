@@ -223,6 +223,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
      *
      * @see com.livae.android.loading.LoadingHelper.LoadListener#preloadInitial()
      */
+    @Deprecated
     public synchronized void finishPreloadInitial() {
         mIsLoadingNext.set(true);
         mLoadListener.loadInitial();
@@ -239,12 +240,10 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
                                                    int dataInserted) {
         if (mIsLoadingPrevious.getAndSet(false)) {
             mAdapter.showTopLoading(false);
-            mAdapter.notifyItemRemoved(0);
             if (showTopErrorView) {
                 mAdapter.showTopError(true);
-                mAdapter.notifyItemInserted(0);
             } else if (dataInserted > 0) {
-                mAdapter.notifyItemRangeInserted(0, dataInserted);
+                mAdapter.notifyDataItemRangeInserted(0, dataInserted);
             }
         }
     }
@@ -261,14 +260,12 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
                                                int dataInserted, boolean keepLoading) {
         if (mIsLoadingNext.getAndSet(false)) {
             mAdapter.showBottomLoading(false);
-            int itemCount = mAdapter.getItemCount();
-            mAdapter.notifyItemRemoved(itemCount - dataInserted);
+            int itemCount = mAdapter.getAdapterItemCount();
             if (showBottomErrorView) {
                 mAdapter.showBottomError(true);
-                mAdapter.notifyItemInserted(itemCount);
             } else {
                 if (dataInserted > 0) {
-                    mAdapter.notifyItemRangeInserted(itemCount - dataInserted, dataInserted);
+                    mAdapter.notifyDataItemRangeInserted(itemCount - dataInserted, dataInserted);
                 }
                 if (keepLoading) {
                     checkLoadNext();
@@ -297,11 +294,10 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
         if (mIsLoadingNext.getAndSet(false)) {
             if (showTopErrorView) {
                 mAdapter.showTopError(true);
-                mAdapter.notifyItemInserted(0);
             } else {
                 if (dataInserted > 0) {
-                    int itemCount = mAdapter.getItemCount();
-                    mAdapter.notifyItemRangeInserted(itemCount - dataInserted, dataInserted);
+                    int itemCount = mAdapter.getAdapterItemCount();
+                    mAdapter.notifyDataItemRangeInserted(itemCount - dataInserted, dataInserted);
                 }
                 if (keepLoading) {
                     checkLoadNext();
@@ -317,7 +313,6 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
         if (mAdapter.isShowTopError() && mEnabledPullToRefresUpdate && !mIsLoadingPrevious.get()) {
             if (mAdapter.isShowTopError()) {
                 mAdapter.showTopError(false);
-                mAdapter.notifyItemRemoved(0);
             }
             if (mTopLoadingView != null) {
                 ViewGroup.LayoutParams layoutParams = mTopLoadingView.getLayoutParams();
@@ -331,7 +326,6 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
             if (!mAdapter.isShowTopLoading()) {
                 mRetryLoadingPrevious = true;
                 mAdapter.showTopLoading(true);
-                mAdapter.notifyItemInserted(0);
             }
             mRecyclerView.post(new Runnable() {
                 @Override
@@ -352,11 +346,9 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
         if (mAdapter.isShowBottomError() && mEnableEndlessLoading && !mIsLoadingNext.get()) {
             if (mAdapter.isShowBottomError()) {
                 mAdapter.showBottomError(false);
-                mAdapter.notifyItemRemoved(mAdapter.getItemCount() - 1);
             }
             if (!mAdapter.isShowBottomLoading()) {
                 mAdapter.showBottomLoading(true);
-                mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
             }
             mIsLoadingNext.set(true);
             mLoadListener.loadNext();
@@ -382,13 +374,13 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
             }
         }
         int itemCount;
-        if ((itemCount = mAdapter.getItemCount()) > 0) {
+        if ((itemCount = mAdapter.getAdapterItemCount()) > 0) {
             mAdapter.showTopLoading(false);
             mAdapter.showTopError(false);
             mAdapter.showBottomLoading(false);
             mAdapter.showBottomError(false);
             mLoadListener.clearAdapter();
-            mAdapter.notifyItemRangeRemoved(0, itemCount);
+            mAdapter.notifyDataItemRangeRemoved(0, itemCount);
         }
         mIsLoadingPrevious.set(false);
         mIsLoadingNext.set(true);
@@ -407,11 +399,9 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
                         mIsLoadingNext.set(true);
                         if (mAdapter.isShowBottomError()) {
                             mAdapter.showBottomError(false);
-                            mAdapter.notifyItemRemoved(mAdapter.getItemCount() - 1);
                         }
                         if (!mAdapter.isShowBottomLoading()) {
                             mAdapter.showBottomLoading(true);
-                            mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
                         }
                         mLoadListener.loadNext();
                     }
@@ -509,11 +499,9 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
     private void initPullToRefresh() {
         if (mAdapter.isShowTopError()) {
             mAdapter.showTopError(false);
-            mAdapter.notifyItemRemoved(0);
         }
         if (!mAdapter.isShowTopLoading()) {
             mAdapter.showTopLoading(true);
-            mAdapter.notifyItemInserted(0);
         }
         if (mTopLoadingView != null) {
             mTopLoadingView.getLayoutParams().height = 1;
@@ -566,10 +554,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
                 });
         mPullToRefreshUpdateAnimation.start();
         mAdapter.showTopLoading(false);
-        mAdapter.notifyItemRemoved(0);
         if (mAdapter.getAdapterItemCount() == 0) {
             mAdapter.showTopError(true);
-            mAdapter.notifyItemInserted(0);
         }
     }
 
@@ -637,6 +623,24 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
     }
 
     /**
+     * Sets the header view, before the loading and the errors
+     *
+     * @param view The view for the header
+     */
+    public void setHeaderView(View view) {
+        mAdapter.setHeaderView(view);
+    }
+
+    /**
+     * Sets the footer view, after the loading and the errors
+     *
+     * @param view The view for the footer
+     */
+    public void setFooterView(View view) {
+        mAdapter.setFooterView(view);
+    }
+
+    /**
      * Class to handle the creation of the error views. By default it does not create any error view.
      */
     public interface ErrorViewsCreator {
@@ -676,6 +680,7 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
          *
          * @see #finishPreloadInitial()
          */
+        @Deprecated
         public void preloadInitial();
 
         /**

@@ -81,6 +81,9 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
         mLoadingHelper.setColorCircularLoading(Color.DKGRAY);
         mLoadingHelper.setColorCircularLoadingActive(Color.GREEN);
         mLoadingHelper.start();
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        mLoadingHelper.setHeaderView(layoutInflater.inflate(R.layout.header, recyclerView, false));
+        mLoadingHelper.setFooterView(layoutInflater.inflate(R.layout.footer, recyclerView, false));
     }
 
     @Override
@@ -172,6 +175,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
     }
 
     @Override
+    @Deprecated
     public void preloadInitial() {
         mLoadingHelper.finishPreloadInitial();
     }

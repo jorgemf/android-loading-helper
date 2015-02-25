@@ -4,13 +4,13 @@ This is a set of classes which help to perform pull to refresh and endless scrol
 
 ![Demo GIF](http://raw.github.com/jorgemf/android-loading-helper/master/misc/loadinghelper.gif)
 
-There is a sample application under apptest.
+There is a sample application under example.
 
 In order to use them add the project to your build.gradle
 
 ```Gradle
 dependencies {
-    compile 'com.livae:android-loadingHelper:1.1.1'
+    compile 'com.livae:android-loadingHelper:1.2.0'
 }
 ```
 
@@ -64,8 +64,14 @@ public class MyFragment extends Fragment implements LoadingHelper.LoadListener {
 		mLoadingHelper.enableInitialProgressLoading(true);
 		mLoadingHelper.enableEndlessLoading(true);
 		mLoadingHelper.enablePullToRefreshUpdate(true);
+		// this sets the colors for the pull to refresh loading
         mLoadingHelper.setColorCircularLoading(Color.DKGRAY);
         mLoadingHelper.setColorCircularLoadingActive(Color.GREEN);
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        // this sets a header and footer view for the list
+        mLoadingHelper.setHeaderView(layoutInflater.inflate(R.layout.header, recyclerView, false));
+        mLoadingHelper.setFooterView(layoutInflater.inflate(R.layout.footer, recyclerView, false));
+        // starts the loading helper
 		mLoadingHelper.start();
 	}
 

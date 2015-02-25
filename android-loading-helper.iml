@@ -7,9 +7,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file:///tmp/jorge/gradlebuilds/classes/main" />
-    <output-test url="file:///tmp/jorge/gradlebuilds/classes/test" />
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />

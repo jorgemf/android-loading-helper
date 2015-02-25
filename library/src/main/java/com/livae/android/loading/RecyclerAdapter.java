@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ProgressBar;
 
 /**
@@ -17,10 +16,12 @@ import android.widget.ProgressBar;
 public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends RecyclerView
         .Adapter<RecyclerView.ViewHolder> {
 
-    private static final int TYPE_TOP_LOADING = -2;
-    private static final int TYPE_TOP_ERROR = -3;
-    private static final int TYPE_BOTTOM_LOADING = -4;
-    private static final int TYPE_BOTTOM_ERROR = -5;
+    private static final int TYPE_TOP_HEADER = -2;
+    private static final int TYPE_TOP_LOADING = -3;
+    private static final int TYPE_TOP_ERROR = -4;
+    private static final int TYPE_BOTTOM_LOADING = -5;
+    private static final int TYPE_BOTTOM_ERROR = -6;
+    private static final int TYPE_BOTTOM_FOOTER = -7;
 
     private final Context mContext;
     private final RecyclerView.Adapter mAdapter;
@@ -32,6 +33,9 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
     private boolean mShowBottomError;
 
     private LoadingHelper mLoadingHelper;
+
+    private View mHeaderView;
+    private View mFooterView;
 
     /**
      * Default constructor, it requires the adapter which will wrap and the loading fragment in order to bind the top
@@ -60,6 +64,9 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int type) {
         RecyclerView.ViewHolder viewHolder;
         switch (type) {
+            case TYPE_TOP_HEADER:
+                viewHolder = new ViewHolder(mHeaderView);
+                break;
             case TYPE_TOP_LOADING:
                 View topLoadingView = LayoutInflater.from(mContext)
                         .inflate(R.layout.loading_helper_view_loading, viewGroup, false);
@@ -84,6 +91,9 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
             case TYPE_BOTTOM_ERROR:
                 viewHolder = new ViewHolder(mErrorViewsCreator.createBottomErrorView(viewGroup));
                 break;
+            case TYPE_BOTTOM_FOOTER:
+                viewHolder = new ViewHolder(mFooterView);
+                break;
             default:
                 viewHolder = mAdapter.onCreateViewHolder(viewGroup, type);
         }
@@ -93,6 +103,8 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         switch (viewHolder.getItemViewType()) {
+            case TYPE_TOP_HEADER:
+                break;
             case TYPE_TOP_LOADING:
                 //noinspection unchecked
                 mLoadingHelper.bindTopLoadingView(viewHolder.itemView,
@@ -104,21 +116,34 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
                 break;
             case TYPE_BOTTOM_ERROR:
                 break;
+            case TYPE_BOTTOM_FOOTER:
+                break;
             default:
-                if (mShowTopLoading) {
-                    position -= 1;
-                }
-                if (mShowTopError) {
-                    position -= 1;
-                }
                 //noinspection unchecked
-                mAdapter.onBindViewHolder(viewHolder, position);
+                mAdapter.onBindViewHolder(viewHolder, position - getHeaderCount());
         }
+    }
+
+    private int getHeaderCount() {
+        int countAdd = 0;
+        if (mHeaderView != null) {
+            countAdd += 1;
+        }
+        if (mShowTopLoading) {
+            countAdd += 1;
+        }
+        if (mShowTopError) {
+            countAdd += 1;
+        }
+        return countAdd;
     }
 
     @Override
     public int getItemCount() {
         int countAdd = 0;
+        if (mHeaderView != null) {
+            countAdd += 1;
+        }
         if (mShowTopLoading) {
             countAdd += 1;
         }
@@ -131,7 +156,58 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
         if (mShowBottomError) {
             countAdd += 1;
         }
+        if (mFooterView != null) {
+            countAdd += 1;
+        }
         return mAdapter.getItemCount() + countAdd;
+    }
+
+    private int getHeaderPosition() {
+        int pos = 0;
+        if (mHeaderView != null) {
+            pos += 1;
+        }
+        return pos;
+    }
+
+    private int getTopLoadingPosition() {
+        int pos = getHeaderPosition();
+        if (mShowTopLoading) {
+            pos += 1;
+        }
+        return pos;
+    }
+
+    private int getTopErrorPosition() {
+        int pos = getTopLoadingPosition();
+        if (mShowTopError) {
+            pos += 1;
+        }
+        return pos;
+    }
+
+    private int getBottomLoadingPosition() {
+        int pos = getTopErrorPosition() + mAdapter.getItemCount();
+        if (mShowBottomLoading) {
+            pos += 1;
+        }
+        return pos;
+    }
+
+    private int getBottomErrorPosition() {
+        int pos = getBottomLoadingPosition();
+        if (mShowBottomError) {
+            pos += 1;
+        }
+        return pos;
+    }
+
+    private int getFooterPosition() {
+        int pos = getBottomErrorPosition();
+        if (mFooterView != null) {
+            pos += 1;
+        }
+        return pos;
     }
 
     /**
@@ -144,34 +220,33 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 
     @Override
     public int getItemViewType(int position) {
-        int pos = position;
-        if (mShowTopLoading) {
-            pos -= 1;
-        }
-        if (mShowTopError) {
-            pos -= 1;
-        }
+        int pos = position - getHeaderCount();
         if (pos >= 0 && pos < mAdapter.getItemCount()) {
-            int itemType = mAdapter.getItemViewType(pos);
-            if (itemType == Adapter.IGNORE_ITEM_VIEW_TYPE) {
-                return itemType;
-            } else if (itemType >= 0) {
-                return itemType;
-            } else {
-                return itemType;
-            }
+            return mAdapter.getItemViewType(pos);
         } else {
             int itemCount = getItemCount();
-            if (mShowTopLoading && position == 0) {
+            if (mHeaderView != null && position == 0) {
+                return TYPE_TOP_HEADER;
+            } else if (mShowTopLoading
+                    && ((mHeaderView == null && position == 0) ||
+                    (mHeaderView != null && position == 1))) {
                 return TYPE_TOP_LOADING;
-            } else if ((!mShowTopLoading && mShowTopError && position == 0)
-                    || (mShowTopLoading && mShowTopError && position == 1)) {
+            } else if (mShowTopError
+                    && ((mHeaderView == null && !mShowTopLoading && position == 0) ||
+                    (mHeaderView != null && !mShowTopLoading && position == 1) ||
+                    (mHeaderView != null && mShowTopLoading && position == 2))) {
                 return TYPE_TOP_ERROR;
-            } else if (mShowBottomLoading && position == itemCount - 1) {
-                return TYPE_BOTTOM_LOADING;
-            } else if ((!mShowBottomLoading && mShowBottomError && position == itemCount - 1)
-                    || (mShowBottomLoading && mShowBottomError && position == itemCount - 2)) {
+            } else if (mFooterView != null && position == itemCount - 1) {
+                return TYPE_BOTTOM_FOOTER;
+            } else if (mShowBottomError
+                    && ((mFooterView == null && position == itemCount - 1) ||
+                    (mFooterView != null && position == itemCount - 2))) {
                 return TYPE_BOTTOM_ERROR;
+            } else if (mShowBottomLoading
+                    && ((mFooterView == null && !mShowBottomError && position == itemCount - 1) ||
+                    (mFooterView != null && !mShowBottomError && position == itemCount - 2) ||
+                    (mFooterView != null && mShowBottomError && position == itemCount - 3))) {
+                return TYPE_BOTTOM_LOADING;
             } else {
                 throw new RuntimeException("should not happen");
             }
@@ -186,6 +261,11 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
     public void showTopLoading(boolean show) {
         if (mShowTopLoading != show) {
             mShowTopLoading = show;
+            if (show) {
+                notifyItemInserted(getTopLoadingPosition());
+            } else {
+                notifyItemRemoved(getTopLoadingPosition());
+            }
         }
     }
 
@@ -197,6 +277,11 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
     public void showTopError(boolean show) {
         if (mShowTopError != show && mErrorViewsCreator.hasTopErrorView()) {
             mShowTopError = show;
+            if (show) {
+                notifyItemInserted(getTopErrorPosition());
+            } else {
+                notifyItemRemoved(getTopErrorPosition());
+            }
         }
     }
 
@@ -208,6 +293,11 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
     public void showBottomLoading(boolean show) {
         if (mShowBottomLoading != show) {
             mShowBottomLoading = show;
+            if (show) {
+                notifyItemInserted(getBottomLoadingPosition());
+            } else {
+                notifyItemRemoved(getBottomLoadingPosition());
+            }
         }
     }
 
@@ -219,6 +309,53 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
     public void showBottomError(boolean show) {
         if (mShowBottomError != show && mErrorViewsCreator.hasBottomErrorView()) {
             mShowBottomError = show;
+            if (show) {
+                notifyItemInserted(getBottomErrorPosition());
+            } else {
+                notifyItemRemoved(getBottomErrorPosition());
+            }
+        }
+    }
+
+    /**
+     * Sets the header view, before the loading and the errors
+     *
+     * @param headerView The view for the header
+     */
+    public void setHeaderView(View headerView) {
+        if (mHeaderView != headerView) {
+            if (mHeaderView == null) {
+                mHeaderView = headerView;
+                notifyItemInserted(getHeaderPosition());
+            } else {
+                mHeaderView = headerView;
+                if (headerView != null) {
+                    notifyItemChanged(getHeaderPosition());
+                } else {
+                    notifyItemRemoved(getHeaderPosition());
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the footer view, after the loading and the errors
+     *
+     * @param footerView The view for the footer
+     */
+    public void setFooterView(View footerView) {
+        if (mFooterView != footerView) {
+            if (mFooterView == null) {
+                mFooterView = footerView;
+                notifyItemInserted(getFooterPosition());
+            } else {
+                mFooterView = footerView;
+                if (footerView != null) {
+                    notifyItemChanged(getFooterPosition());
+                } else {
+                    notifyItemRemoved(getFooterPosition());
+                }
+            }
         }
     }
 
@@ -250,6 +387,81 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
         return mShowBottomError;
     }
 
+    /**
+     * Notify that the item at <code>position</code> has changed.
+     *
+     * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemChanged(int)
+     */
+    public void notifyDataItemChanged(int position) {
+        super.notifyItemChanged(getHeaderCount() + position);
+    }
+
+    /**
+     * Notify that the <code>itemCount</code> items starting at
+     * position <code>positionStart</code> have changed.
+     *
+     * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemRangeChanged(int, int)
+     */
+    public void notifyDataItemRangeChanged(int positionStart, int itemCount) {
+        super.notifyItemRangeChanged(getHeaderCount() + positionStart, itemCount);
+    }
+
+    /**
+     * Notify that the item reflected at <code>position</code>
+     * has been newly inserted. The item previously at <code>position</code> is now at
+     * position <code>position + 1</code>.
+     *
+     * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemInserted(int)
+     */
+    public void notifyDataItemInserted(int position) {
+        super.notifyItemInserted(getHeaderCount() + position);
+    }
+
+    /**
+     * Notify any registered observers that the item reflected at <code>fromPosition</code>
+     * has been moved to <code>toPosition</code>.
+     *
+     * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemMoved(int, int)
+     */
+    public void notifyDataItemMoved(int fromPosition, int toPosition) {
+        super.notifyItemMoved(getHeaderCount() + fromPosition, getHeaderCount() + toPosition);
+    }
+
+    /**
+     * Notify that the currently reflected <code>itemCount</code>
+     * items starting at <code>positionStart</code> have been newly inserted. The items
+     * previously located at <code>positionStart</code> and beyond can now be found starting
+     * at position <code>positionStart + itemCount</code>.
+     *
+     * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemRangeInserted(int, int)
+     */
+    public void notifyDataItemRangeInserted(int positionStart, int itemCount) {
+        super.notifyItemRangeInserted(getHeaderCount() + positionStart, itemCount);
+    }
+
+    /**
+     * Notify that the item previously located at <code>position</code>
+     * has been removed from the data set. The items previously located at and after
+     * <code>position</code> may now be found at <code>oldPosition - 1</code>.
+     *
+     * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemRemoved(int)
+     */
+    public void notifyDataItemRemoved(int position) {
+        super.notifyItemRemoved(getHeaderCount() + position);
+    }
+
+    /**
+     * Notify that the <code>itemCount</code> items previously
+     * located at <code>positionStart</code> have been removed from the data set. The items
+     * previously located at and after <code>positionStart + itemCount</code> may now be found
+     * at <code>oldPosition - itemCount</code>.
+     *
+     * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemRangeRemoved(int, int)
+     */
+    public void notifyDataItemRangeRemoved(int positionStart, int itemCount) {
+        super.notifyItemRangeRemoved(getHeaderCount() + positionStart, itemCount);
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         protected ProgressBar mTopLoading;
@@ -258,4 +470,6 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
             super(view);
         }
     }
+
+
 }
