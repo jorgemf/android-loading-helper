@@ -82,7 +82,7 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 		mLoadingHelper.setColorCircularLoadingActive(Color.GREEN);
 		mLoadingHelper.start();
 		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-//        mLoadingHelper.setHeaderView(layoutInflater.inflate(R.layout.header, recyclerView, false));
+		mLoadingHelper.setHeaderView(layoutInflater.inflate(R.layout.header, recyclerView, false));
 		mLoadingHelper.setFooterView(layoutInflater.inflate(R.layout.footer, recyclerView, false));
 	}
 

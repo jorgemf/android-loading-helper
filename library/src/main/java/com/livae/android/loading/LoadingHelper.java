@@ -682,7 +682,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 
 		/**
 		 * Method called when the pull to refresh action has been performed.  After finish the
-		 * loading you must call the method #finishLoadingPrevious(boolean, int)
+		 * loading you must update the adapter data and call the method
+		 * #finishLoadingPrevious(boolean, int)
 		 *
 		 * @see #finishLoadingPrevious(boolean, int)
 		 */
@@ -691,8 +692,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 
 		/**
 		 * Method called when the user is reaching the end of the elements and it needs to load
-		 * more. After finish the loading you must call the method #finishLoadingNext(boolean, int,
-		 * boolean)
+		 * more. After finish the loading you must update the adapter data and call the method
+		 * #finishLoadingNext(boolean, int, boolean)
 		 *
 		 * @see #finishLoadingNext(boolean, int, boolean)
 		 */
@@ -700,8 +701,8 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 
 
 		/**
-		 * Method called to load the first items. After finish the loading you must call the method
-		 * #finishLoadingInitial(boolean, int, boolean)
+		 * Method called to load the first items. After finish the loading you must update the
+		 * adapter data and call the method #finishLoadingInitial(boolean, int, boolean)
 		 *
 		 * @see #finishLoadingInitial(boolean, int, boolean)
 		 */
