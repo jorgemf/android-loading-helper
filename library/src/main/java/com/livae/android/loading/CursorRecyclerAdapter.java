@@ -68,7 +68,8 @@ public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> e
 	}
 
 	/**
-	 * Helper method called each time the cursor is changed, useful to get the indexes of the columns.
+	 * Helper method called each time the cursor is changed, useful to get the indexes of the
+	 * columns.
 	 */
 	public abstract void findIndexes(Cursor cursor);
 
@@ -78,7 +79,8 @@ public abstract class CursorRecyclerAdapter<k extends RecyclerView.ViewHolder> e
 	 * @param holder   ViewHolder
 	 * @param cursor   Cursor in the current position of the element
 	 * @param position Position of the element
-	 * @see #onBindViewHolder(android.support.v7.widget.RecyclerView.ViewHolder, android.database.Cursor, int)
+	 * @see #onBindViewHolder(android.support.v7.widget.RecyclerView.ViewHolder,
+	 * android.database.Cursor, int)
 	 */
 	public abstract void onBindViewHolder(k holder, Cursor cursor, int position);
 }
