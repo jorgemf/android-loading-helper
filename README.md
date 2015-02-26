@@ -10,7 +10,7 @@ In order to use them add the project to your build.gradle
 
 ```Gradle
 dependencies {
-    compile 'com.livae:android-loadingHelper:1.2.0'
+    compile 'com.livae:android-loadingHelper:1.2.1'
 }
 ```
 
@@ -82,9 +82,9 @@ public class MyFragment extends Fragment implements LoadingHelper.LoadListener {
 	}
 
 	@Override
-	public void loadPrevious() {
-	    // load the previous data in the background (pull to refresh)
-	    // when finished call: mLoadingHelper.finishLoadingPrevious();
+	public void loadInitial() {
+	    // load initial data in the background, make the first network request
+	    // when finished call: mLoadingHelper.finishLoadInitial();
 	}
 
 	@Override
@@ -94,15 +94,9 @@ public class MyFragment extends Fragment implements LoadingHelper.LoadListener {
 	}
 
 	@Override
-	public void loadInitial() {
-	    // load initial data in the background, make the first network request
-	    // when finished call: mLoadingHelper.finishLoadInitial();
-	}
-
-	@Override
-	public void preloadInitial() {
-	    // load data from your cache before making any network request
-	    // when finished call: mLoadingHelper.finishPreloadInitial();
+	public void loadPrevious() {
+	    // load the previous data in the background (pull to refresh)
+	    // when finished call: mLoadingHelper.finishLoadingPrevious();
 	}
 
 	@Override
