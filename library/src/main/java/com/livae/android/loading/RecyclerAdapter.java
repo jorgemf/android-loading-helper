@@ -58,6 +58,34 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 		mShowBottomLoading = false;
 		mShowTopError = false;
 		mShowBottomError = false;
+		mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+			@Override
+			public void onChanged() {
+				RecyclerAdapter.this.notifyDataSetChanged();
+			}
+
+			@Override
+			public void onItemRangeChanged(int positionStart, int itemCount) {
+				RecyclerAdapter.this.notifyItemRangeChanged(positionStart, itemCount);
+			}
+
+			@Override
+			public void onItemRangeInserted(int positionStart, int itemCount) {
+				RecyclerAdapter.this.notifyItemRangeInserted(positionStart, itemCount);
+			}
+
+			@Override
+			public void onItemRangeRemoved(int positionStart, int itemCount) {
+				RecyclerAdapter.this.notifyItemRangeRemoved(positionStart, itemCount);
+			}
+
+			@Override
+			public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+				for (int i = 0; i < itemCount; i++) {
+					RecyclerAdapter.this.notifyItemMoved(fromPosition + 1, toPosition + 1);
+				}
+			}
+		});
 	}
 
 	@Override
