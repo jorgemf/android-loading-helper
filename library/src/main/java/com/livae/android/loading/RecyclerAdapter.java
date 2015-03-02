@@ -394,6 +394,13 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	}
 
 	/**
+	 * @return true if the header view is being displayed
+	 */
+	public boolean isShowHeader() {
+		return mHeaderView != null;
+	}
+
+	/**
 	 * @return true if the top loading view is being displayed
 	 */
 	public boolean isShowTopLoading() {
@@ -419,6 +426,13 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 */
 	public boolean isShowBottomError() {
 		return mShowBottomError;
+	}
+
+	/**
+	 * @return true if the footer view is being displayed
+	 */
+	public boolean isShowFooter() {
+		return mFooterView != null;
 	}
 
 	/**

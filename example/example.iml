@@ -83,6 +83,7 @@
       <excludeFolder url="file:///tmp/gradlebuild/android-loading-helper/example/intermediates/rs" />
       <excludeFolder url="file:///tmp/gradlebuild/android-loading-helper/example/intermediates/symbols" />
       <excludeFolder url="file:///tmp/gradlebuild/android-loading-helper/example/outputs" />
+      <excludeFolder url="file:///tmp/gradlebuild/android-loading-helper/example/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

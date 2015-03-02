@@ -733,7 +733,10 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			if (mAdapter.isShowTopError()) {
 				position -= 1;
 			}
-			if (position < 0) {
+			if (mAdapter.isShowHeader()) {
+				position -= 1;
+			}
+			if (position < 0 || position > mAdapter.getItemCount()) {
 				return mSpanCount;
 			} else {
 				return mSpanSizeLookUpWrapped.getSpanSize(position);
@@ -748,7 +751,10 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 			if (mAdapter.isShowTopError()) {
 				position -= 1;
 			}
-			if (position < 0) {
+			if (mAdapter.isShowHeader()) {
+				position -= 1;
+			}
+			if (position < 0 || position > mAdapter.getItemCount()) {
 				return spanCount - 1;
 			} else {
 				return mSpanSizeLookUpWrapped.getSpanIndex(position, spanCount);
