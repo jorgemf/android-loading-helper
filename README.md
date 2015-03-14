@@ -10,7 +10,7 @@ In order to use them add the project to your build.gradle
 
 ```Gradle
 dependencies {
-    compile 'com.livae:android-loadingHelper:1.2.4'
+    compile 'com.livae:android-loadingHelper:1.2.5'
 }
 ```
 

@@ -85,9 +85,8 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 		mLoadingHelper.setColorCircularLoadingActive(Color.GREEN);
 		mLoadingHelper.start();
 		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-		// TODO add
-//		mLoadingHelper.setHeaderView(layoutInflater.inflate(R.layout.header, recyclerView, false));
-//		mLoadingHelper.setFooterView(layoutInflater.inflate(R.layout.footer, recyclerView, false));
+		mLoadingHelper.setHeaderView(layoutInflater.inflate(R.layout.header, recyclerView, false));
+		mLoadingHelper.setFooterView(layoutInflater.inflate(R.layout.footer, recyclerView, false));
 	}
 
 	@Override
@@ -114,31 +113,31 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 
 	@Override
 	public void loadPrevious() {
-		reset();
-//		mAsyncTaskLoadPrevious = new AsyncTask<Void, Void, Void>() {
-//			@Override
-//			protected Void doInBackground(Void... params) {
-//				try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//				return null;
-//			}
-//
-//			@Override
-//			protected void onPostExecute(Void aVoid) {
-//				super.onPostExecute(aVoid);
-//				if (Math.random() < 0.4) {
-//					mLoadingHelper.finishLoadingPrevious(true, 0);
-//				} else {
-//					mFakeAdapter.preadd(2);
-//					mLoadingHelper.finishLoadingPrevious(false, 2);
-//				}
-//				mLoadingHelper.enableEndlessLoading(true);
-//			}
-//		};
-//		mAsyncTaskLoadPrevious.execute();
+//		reset();
+		mAsyncTaskLoadPrevious = new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void aVoid) {
+				super.onPostExecute(aVoid);
+				if (Math.random() < 0.4) {
+					mLoadingHelper.finishLoadingPrevious(true, 0);
+				} else {
+					mFakeAdapter.preadd(2);
+					mLoadingHelper.finishLoadingPrevious(false, 2);
+				}
+				mLoadingHelper.enableEndlessLoading(true);
+			}
+		};
+		mAsyncTaskLoadPrevious.execute();
 	}
 
 	@Override
