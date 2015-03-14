@@ -93,6 +93,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 		RecyclerView.ViewHolder viewHolder;
 		switch (type) {
 			case TYPE_TOP_HEADER:
+				System.out.println("CREATE: TYPE_TOP_HEADER");
 				viewHolder = new ViewHolder(mHeaderView);
 				break;
 			case TYPE_TOP_LOADING:
@@ -120,6 +121,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 				viewHolder = new ViewHolder(mErrorViewsCreator.createBottomErrorView(viewGroup));
 				break;
 			case TYPE_BOTTOM_FOOTER:
+				System.out.println("CREATE: TYPE_BOTTOM_FOOTER");
 				viewHolder = new ViewHolder(mFooterView);
 				break;
 			default:
@@ -132,21 +134,28 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
 		switch (viewHolder.getItemViewType()) {
 			case TYPE_TOP_HEADER:
+				System.out.println("TYPE_TOP_HEADER       " + position + " -" + getHeaderCount());
 				break;
 			case TYPE_TOP_LOADING:
+				System.out.println("TYPE_TOP_LOADING      " + position + " -" + getHeaderCount());
 				//noinspection unchecked
 				mLoadingHelper.bindTopLoadingView(viewHolder.itemView,
 						((ViewHolder) viewHolder).mTopLoading);
 				break;
 			case TYPE_TOP_ERROR:
+				System.out.println("TYPE_TOP_ERROR        " + position + " -" + getHeaderCount());
 				break;
 			case TYPE_BOTTOM_LOADING:
+				System.out.println("TYPE_BOTTOM_LOADING   " + position + " -" + getHeaderCount());
 				break;
 			case TYPE_BOTTOM_ERROR:
+				System.out.println("TYPE_BOTTOM_ERROR     " + position + " -" + getHeaderCount());
 				break;
 			case TYPE_BOTTOM_FOOTER:
+				System.out.println("TYPE_BOTTOM_FOOTER    " + position + " -" + getHeaderCount());
 				break;
 			default:
+				System.out.println("default               " + position + " -" + getHeaderCount());
 				//noinspection unchecked
 				mAdapter.onBindViewHolder(viewHolder, position - getHeaderCount());
 		}
@@ -215,7 +224,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	}
 
 	private int getBottomLoadingPosition() {
-		int pos = getTopErrorPosition() + mAdapter.getItemCount();
+		int pos = getHeaderCount() + mAdapter.getItemCount();
 		if (mShowBottomLoading) {
 			pos += 1;
 		}
@@ -239,8 +248,8 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	}
 
 	/**
-	 * @return The number of items of the adapter with the data. It does not include the headar and
-	 * footer views for loading items.
+	 * @return The number of items of the adapter with the data. It does not include the header and
+	 * footer views for loading items, errors and custom views.
 	 */
 	public int getAdapterItemCount() {
 		return mAdapter.getItemCount();
@@ -261,6 +270,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 				return TYPE_TOP_LOADING;
 			} else if (mShowTopError
 					&& ((mHeaderView == null && !mShowTopLoading && position == 0) ||
+					(mHeaderView == null && mShowTopLoading && position == 1) ||
 					(mHeaderView != null && !mShowTopLoading && position == 1) ||
 					(mHeaderView != null && mShowTopLoading && position == 2))) {
 				return TYPE_TOP_ERROR;
@@ -272,6 +282,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 				return TYPE_BOTTOM_ERROR;
 			} else if (mShowBottomLoading
 					&& ((mFooterView == null && !mShowBottomError && position == itemCount - 1) ||
+					(mFooterView == null && mShowBottomError && position == itemCount - 2) ||
 					(mFooterView != null && !mShowBottomError && position == itemCount - 2) ||
 					(mFooterView != null && mShowBottomError && position == itemCount - 3))) {
 				return TYPE_BOTTOM_LOADING;
@@ -287,13 +298,18 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 * @param show whether to show the view or not
 	 */
 	public void showTopLoading(boolean show) {
+		System.out.println("showTopLoading " + show);
 		if (mShowTopLoading != show) {
 			if (show) {
 				mShowTopLoading = true;
-				notifyItemInserted(getTopLoadingPosition());
+				int position = getTopLoadingPosition();
+				notifyItemInserted(position);
+				System.out.println("show top loading true: " + position);
 			} else {
-				notifyItemRemoved(getTopLoadingPosition());
+				int position = getTopLoadingPosition();
 				mShowTopLoading = false;
+				notifyItemRemoved(position);
+				System.out.println("show top loading false: " + position);
 			}
 		}
 	}
@@ -304,13 +320,18 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 * @param show whether to show the view or not
 	 */
 	public void showTopError(boolean show) {
+		System.out.println("showTopError " + show);
 		if (mShowTopError != show && mErrorViewsCreator.hasTopErrorView()) {
 			if (show) {
 				mShowTopError = true;
-				notifyItemInserted(getTopErrorPosition());
+				int position = getTopErrorPosition();
+				notifyItemInserted(position);
+				System.out.println("show top error true: " + position);
 			} else {
-				notifyItemRemoved(getTopErrorPosition());
+				int position = getTopErrorPosition();
 				mShowTopError = false;
+				notifyItemRemoved(position);
+				System.out.println("show top error false: " + position);
 			}
 		}
 	}
@@ -321,13 +342,18 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 * @param show whether to show the view or not
 	 */
 	public void showBottomLoading(boolean show) {
+		System.out.println("showBottomLoading " + show);
 		if (mShowBottomLoading != show) {
 			if (show) {
 				mShowBottomLoading = true;
-				notifyItemInserted(getBottomLoadingPosition());
+				int position = getBottomLoadingPosition();
+				notifyItemInserted(position);
+				System.out.println("show bottom loading true: " + position);
 			} else {
-				notifyItemRemoved(getBottomLoadingPosition());
+				int position = getBottomLoadingPosition();
 				mShowBottomLoading = false;
+				notifyItemRemoved(position);
+				System.out.println("show bottom loading false: " + position);
 			}
 		}
 	}
@@ -338,13 +364,18 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 * @param show whether to show the view or not
 	 */
 	public void showBottomError(boolean show) {
+		System.out.println("showBottomError " + show);
 		if (mShowBottomError != show && mErrorViewsCreator.hasBottomErrorView()) {
 			if (show) {
 				mShowBottomError = true;
-				notifyItemInserted(getBottomErrorPosition());
+				int position = getBottomErrorPosition();
+				notifyItemInserted(position);
+				System.out.println("show bottom error true: " + position);
 			} else {
-				notifyItemRemoved(getBottomErrorPosition());
+				int position = getBottomErrorPosition();
 				mShowBottomError = false;
+				notifyItemRemoved(position);
+				System.out.println("show bottom error false: " + position);
 			}
 		}
 	}
@@ -355,17 +386,21 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 * @param headerView The view for the header
 	 */
 	public void setHeaderView(View headerView) {
+		System.out.println("setHeaderView " + headerView);
 		if (mHeaderView != headerView) {
 			if (mHeaderView == null) {
 				mHeaderView = headerView;
-				notifyItemInserted(getHeaderPosition());
+				int position = getHeaderPosition();
+				notifyItemInserted(position);
 			} else {
 				if (headerView != null) {
 					mHeaderView = headerView;
-					notifyItemChanged(getHeaderPosition());
+					int position = getHeaderPosition();
+					notifyItemChanged(position);
 				} else {
-					notifyItemRemoved(getHeaderPosition());
+					int position = getHeaderPosition();
 					mHeaderView = null;
+					notifyItemRemoved(position);
 				}
 			}
 		}
@@ -377,17 +412,21 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 * @param footerView The view for the footer
 	 */
 	public void setFooterView(View footerView) {
+		System.out.println("setFooterView " + footerView);
 		if (mFooterView != footerView) {
 			if (mFooterView == null) {
 				mFooterView = footerView;
-				notifyItemInserted(getFooterPosition());
+				int position = getFooterPosition();
+				notifyItemInserted(position);
 			} else {
 				if (footerView != null) {
 					mFooterView = footerView;
-					notifyItemChanged(getFooterPosition());
+					int position = getFooterPosition();
+					notifyItemChanged(position);
 				} else {
-					notifyItemRemoved(getFooterPosition());
+					int position = getFooterPosition();
 					mFooterView = null;
+					notifyItemRemoved(position);
 				}
 			}
 		}
@@ -483,6 +522,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemRangeInserted(int, int)
 	 */
 	public void notifyDataItemRangeInserted(int positionStart, int itemCount) {
+		System.out.println("notifyDataItemRangeInserted " + positionStart + " " + itemCount);
 		super.notifyItemRangeInserted(getHeaderCount() + positionStart, itemCount);
 	}
 
@@ -506,6 +546,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	 * @see android.support.v7.widget.RecyclerView.Adapter#notifyItemRangeRemoved(int, int)
 	 */
 	public void notifyDataItemRangeRemoved(int positionStart, int itemCount) {
+		System.out.println("notifyDataItemRangeRemoved " + positionStart + " " + itemCount);
 		super.notifyItemRangeRemoved(getHeaderCount() + positionStart, itemCount);
 	}
 

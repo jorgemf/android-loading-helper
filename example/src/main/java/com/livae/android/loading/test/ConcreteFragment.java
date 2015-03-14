@@ -18,6 +18,9 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 	private FakeAdapter mFakeAdapter;
 
 	private LoadingHelper<FakeViewHolder> mLoadingHelper;
+	private AsyncTask<Void, Void, Void> mAsyncTaskLoadInitial;
+	private AsyncTask<Void, Void, Void> mAsyncTaskLoadNext;
+	private AsyncTask<Void, Void, Void> mAsyncTaskLoadPrevious;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,8 +85,9 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 		mLoadingHelper.setColorCircularLoadingActive(Color.GREEN);
 		mLoadingHelper.start();
 		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-		mLoadingHelper.setHeaderView(layoutInflater.inflate(R.layout.header, recyclerView, false));
-		mLoadingHelper.setFooterView(layoutInflater.inflate(R.layout.footer, recyclerView, false));
+		// TODO add
+//		mLoadingHelper.setHeaderView(layoutInflater.inflate(R.layout.header, recyclerView, false));
+//		mLoadingHelper.setFooterView(layoutInflater.inflate(R.layout.footer, recyclerView, false));
 	}
 
 	@Override
@@ -92,37 +96,54 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 		mLoadingHelper.onResume();
 	}
 
+	private void reset() {
+		if (mAsyncTaskLoadInitial != null) {
+			mAsyncTaskLoadInitial.cancel(true);
+			mAsyncTaskLoadInitial = null;
+		}
+		if (mAsyncTaskLoadNext != null) {
+			mAsyncTaskLoadNext.cancel(true);
+			mAsyncTaskLoadNext = null;
+		}
+		if (mAsyncTaskLoadPrevious != null) {
+			mAsyncTaskLoadPrevious.cancel(true);
+			mAsyncTaskLoadPrevious = null;
+		}
+		mLoadingHelper.reset();
+	}
+
 	@Override
 	public void loadPrevious() {
-		AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void aVoid) {
-				super.onPostExecute(aVoid);
-				if (Math.random() < 0.4) {
-					mLoadingHelper.finishLoadingPrevious(true, 0);
-				} else {
-					mFakeAdapter.preadd(2);
-					mLoadingHelper.finishLoadingPrevious(false, 2);
-				}
-				mLoadingHelper.enableEndlessLoading(true);
-			}
-		};
-		asyncTask.execute();
+		reset();
+//		mAsyncTaskLoadPrevious = new AsyncTask<Void, Void, Void>() {
+//			@Override
+//			protected Void doInBackground(Void... params) {
+//				try {
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				return null;
+//			}
+//
+//			@Override
+//			protected void onPostExecute(Void aVoid) {
+//				super.onPostExecute(aVoid);
+//				if (Math.random() < 0.4) {
+//					mLoadingHelper.finishLoadingPrevious(true, 0);
+//				} else {
+//					mFakeAdapter.preadd(2);
+//					mLoadingHelper.finishLoadingPrevious(false, 2);
+//				}
+//				mLoadingHelper.enableEndlessLoading(true);
+//			}
+//		};
+//		mAsyncTaskLoadPrevious.execute();
 	}
 
 	@Override
 	public void loadNext() {
-		AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void>() {
+		mAsyncTaskLoadNext = new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
@@ -144,12 +165,12 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 				}
 			}
 		};
-		asyncTask.execute();
+		mAsyncTaskLoadNext.execute();
 	}
 
 	@Override
 	public void loadInitial() {
-		AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void>() {
+		mAsyncTaskLoadInitial = new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
@@ -166,12 +187,12 @@ public class ConcreteFragment extends Fragment implements LoadingHelper.LoadList
 				if (Math.random() < 0.4) {
 					mLoadingHelper.finishLoadingInitial(true, 0, true);
 				} else {
-					mFakeAdapter.add(14);
-					mLoadingHelper.finishLoadingInitial(false, 14, true);
+					mFakeAdapter.add(10);
+					mLoadingHelper.finishLoadingInitial(false, 10, true);
 				}
 			}
 		};
-		asyncTask.execute();
+		mAsyncTaskLoadInitial.execute();
 	}
 
 	@Override
