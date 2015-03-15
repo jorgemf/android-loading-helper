@@ -215,7 +215,7 @@ public class RecyclerAdapter<k extends RecyclerView.ViewHolder> extends Recycler
 	}
 
 	private int getBottomLoadingPosition() {
-		int pos = getHeaderCount() + mAdapter.getItemCount();
+		int pos = getTopErrorPosition() + mAdapter.getItemCount();
 		if (mShowBottomLoading) {
 			pos += 1;
 		}
