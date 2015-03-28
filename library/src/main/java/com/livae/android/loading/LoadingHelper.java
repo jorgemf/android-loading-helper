@@ -584,19 +584,21 @@ public class LoadingHelper<k extends RecyclerView.ViewHolder> implements View.On
 		if (mPullToRefreshUpdateAnimation != null && mPullToRefreshUpdateAnimation.isRunning()) {
 			mPullToRefreshUpdateAnimation.cancel();
 		}
-		float alpha = mTopLoadingView.getAlpha();
-		mPullToRefreshUpdateAnimation = ValueAnimator.ofFloat(alpha, 0);
-		mPullToRefreshUpdateAnimation.setDuration(mPullToRefreshAnimationDuration);
-		mPullToRefreshUpdateAnimation.setInterpolator(mDecelerateInterpolator);
-		mPullToRefreshUpdateAnimation.addUpdateListener(
-				new ValueAnimator.AnimatorUpdateListener() {
-					@Override
-					public void onAnimationUpdate(ValueAnimator valueAnimator) {
-						float val = (Float) valueAnimator.getAnimatedValue();
-						mTopLoadingView.setAlpha(val);
-					}
-				});
-		mPullToRefreshUpdateAnimation.start();
+		if (mTopLoadingView != null) {
+			float alpha = mTopLoadingView.getAlpha();
+			mPullToRefreshUpdateAnimation = ValueAnimator.ofFloat(alpha, 0);
+			mPullToRefreshUpdateAnimation.setDuration(mPullToRefreshAnimationDuration);
+			mPullToRefreshUpdateAnimation.setInterpolator(mDecelerateInterpolator);
+			mPullToRefreshUpdateAnimation.addUpdateListener(
+					new ValueAnimator.AnimatorUpdateListener() {
+						@Override
+						public void onAnimationUpdate(ValueAnimator valueAnimator) {
+							float val = (Float) valueAnimator.getAnimatedValue();
+							mTopLoadingView.setAlpha(val);
+						}
+					});
+			mPullToRefreshUpdateAnimation.start();
+		}
 		mAdapter.showTopLoading(false);
 		if (mAdapter.getAdapterItemCount() == 0) {
 			mAdapter.showTopError(true);
